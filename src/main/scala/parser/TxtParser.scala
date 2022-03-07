@@ -1,5 +1,5 @@
 package com.github.leopfeiffer.gitcommitanalyzer
-package converter
+package parser
 
  import gitlog.{Commit, GitLog, Node}
 
@@ -8,7 +8,7 @@ package converter
  import scala.collection.mutable.ArrayBuffer
  import scala.util.matching.Regex
 
-object TxtConverter {
+object TxtParser {
 
   def main(log: String): GitLog = {
     val rawSplit = splitIntoCommits(log)

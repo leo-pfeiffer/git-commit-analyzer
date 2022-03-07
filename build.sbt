@@ -7,3 +7,7 @@ lazy val root = (project in file("."))
     name := "git-commit-analyzer",
     idePackagePrefix := Some("com.github.leopfeiffer.gitcommitanalyzer")
   )
+
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "3.2.9" % Test
+)
