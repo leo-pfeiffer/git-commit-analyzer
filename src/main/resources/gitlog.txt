@@ -1,0 +1,106 @@
+commit 5acf2d7aebcad417c5d73cc5dc41f66596786a98
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-07T07:24:29+00:00
+
+    feat: new file
+
+0	0	anotherfile.txt
+2	0	hello.txt
+
+commit d0108e9fc9e4d0d248510e70f2e377607d555e57
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-07T07:23:27+00:00
+
+    feat: new line
+
+2	0	hello.txt
+
+commit 83d6daa0c8828e6730ddb0797a4518588b9b7a99
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T21:44:05+00:00
+
+    test: this is a test
+    
+    And this is the body of the commit message
+
+1	1	hello.txt
+
+commit 1b015d07b318648b18509407d86344357b6db8e2
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:43:01+00:00
+
+    chore: setup
+
+1	1	hello.txt
+
+commit 68423876ae5c1714529db791622ee35e69ec6802
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:42:50+00:00
+
+    test: added tests
+
+1	1	hello.txt
+
+commit 2a511e38aa17f163387753d675673d6fbf4652e8
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:42:31+00:00
+
+    refactor: always refactor
+
+1	1	hello.txt
+
+commit 30b0c37083663cd46551bd09c080e7b838145b27
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:42:07+00:00
+
+    style: some style changes
+
+1	1	hello.txt
+
+commit 53c3087c16ae371bc95d2d40eda0543dedb3673d
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:42:04+00:00
+
+    style: some style changes
+
+1	1	hello.txt
+
+commit c4dda3065cdf651c6958d06adc3ed0b2536a4992
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:42:01+00:00
+
+    style: some style changes
+
+1	1	hello.txt
+
+commit ad279b025853da3ac30f650b97ccaacd8c3cb5af
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:41:45+00:00
+
+    docs: some documentation
+
+1	1	hello.txt
+
+commit 88c9c2dd83628e81c02efd97329e3237a1b4aa68
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:41:34+00:00
+
+    fix: fixed something
+
+1	1	hello.txt
+
+commit 9387538d179b2536abe1acbcc8fe02158cdfd7e2
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:41:13+00:00
+
+    feat: another feature
+
+1	1	hello.txt
+
+commit 25fd66d0b64b9dd3c292da645c53ae9cd06016e9
+Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
+Date:   2022-03-06T18:29:45+00:00
+
+    feat: this is a new feature
+
+1	0	hello.txt
