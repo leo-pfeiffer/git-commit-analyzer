@@ -76,6 +76,7 @@ object TxtParser {
     }
 
   def makeNodeHelper(rawNode: String): Node = {
+    // todo handle delete file, where add / del is '-'
     val add: Int = matchNodeAddition(rawNode)
     val del: Int = matchNodeDeletion(rawNode)
     val txt: String = matchNodeText(rawNode)
