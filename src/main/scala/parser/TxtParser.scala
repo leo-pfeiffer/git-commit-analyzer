@@ -39,44 +39,47 @@ object TxtParser {
   }
 
   def matchAuthorName(rawCommit: String): String = {
-    matchPattern(rawCommit, raw"(?<=Author:\s).*(?=\s<)".r)
+    matchPattern(rawCommit, raw"(?<=^Author:\s)[\S].*(?=\s<)".r)
   }
 
   def matchAuthorMail(rawCommit: String): String = {
-    matchPattern(rawCommit, raw"(?<=Author:\s.*<).*(?=>)".r)
+    matchPattern(rawCommit, raw"(?<=^Author:\s.*<)[\S].*(?=>)".r)
   }
 
   def matchTimestamp(rawCommit: String): String = {
-    matchPattern(rawCommit, raw"(?<=Date:\s+)[\d{4}].*".r)
+    matchPattern(rawCommit, raw"(?<=Date:\s+)[\d{4}][\S].*".r)
   }
 
   def matchHeader(rawCommit: String): String = {
-    matchPattern(rawCommit, raw"(?<=\s{4})[A-Za-z].*".r)
+    matchPattern(rawCommit, raw"(?<=\s{4})[\S].*".r)
   }
 
-  def matchPattern(string: String, pattern: Regex): String = {
-    pattern.findFirstIn(string).getOrElse("")
+  def matchBody(rawCommit: String) = {
+    // todo
   }
 
   def matchNodes(rawCommit: String): Iterator[String] = {
-    // todo maybe need to do (\d|-)..
-    matchAll(rawCommit, raw"(\d+)\s+(\d+)\s+.*".r)
+    // todo
+    matchAll(rawCommit, raw"^([-\d]+)[\t\s]+([-\d]+)[\t\s]+.*".r)
   }
 
   def matchNodeAddition(rawNode: String): Int = {
-    matchPattern(rawNode, raw"^(?:\d+)+".r).toInt
+    val num = matchGroup(rawNode, raw"^(\d+)([\s\t]+)([-\d]+)([\s\t]+)([\S].+)".r, 1)
+    val hyphen = matchGroup(rawNode, raw"^(-)([\s\t]+)([-\d]+)([\s\t]+)([\S].+)".r, 1)
+    if hyphen.equals("") then num.toInt else 0
   }
 
   def matchNodeDeletion(rawNode: String): Int = {
-    matchPattern(rawNode, raw"(?<=\d+[\t\s+])(\d+)".r).toInt
+    val num = matchGroup(rawNode, raw"^([-\d]+)([\s\t]+)(\d+)([\s\t]+)([\S].+)".r, 3)
+    val hyphen = matchGroup(rawNode, raw"^([-\d]+)([\s\t]+)(-)([\s\t]+)([\S].+)".r, 3)
+    if hyphen.equals("") then num.toInt else 0
   }
 
   def matchNodeText(rawNode: String): String = {
-    matchPattern(rawNode, raw"(?<=\d+[\t\s+][\d+][\t\s+]).+".r)
+    matchGroup(rawNode, raw"^[-\d]+[\s\t]+[-\d]+[\s\t]+([\S].+)".r, 1)
     }
 
   def makeNodeHelper(rawNode: String): Node = {
-    // todo handle delete file, where add / del is '-'
     val add: Int = matchNodeAddition(rawNode)
     val del: Int = matchNodeDeletion(rawNode)
     val txt: String = matchNodeText(rawNode)
@@ -87,8 +90,16 @@ object TxtParser {
     matchNodes(rawCommit).map(makeNodeHelper).toSeq
   }
 
+  def matchPattern(string: String, pattern: Regex): String = {
+    pattern.findFirstIn(string).getOrElse("")
+  }
+
   def matchAll(string: String, pattern: Regex): Regex.MatchIterator = {
     pattern.findAllIn(string)
+  }
+
+  def matchGroup(rawNode: String, pattern: Regex, group: Int): String = {
+    if (pattern.matches(rawNode)) pattern.findAllIn(rawNode).group(group) else ""
   }
 
 }
