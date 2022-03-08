@@ -51,11 +51,15 @@ object TxtParser {
   }
 
   def matchHeader(rawCommit: String): String = {
-    matchPattern(rawCommit, raw"(?<=\s{4})[\S].*".r)
+    matchPattern(rawCommit, raw"(?<=\n\s{4})[\S].*".r)
   }
 
-  def matchBody(rawCommit: String) = {
-    // todo
+  def matchBody(rawCommit: String): String = {
+    matchAll(rawCommit, raw"(?<=\n\s{4})([\S].*)".r)
+      .zipWithIndex.foldLeft(""){(acc, next) =>
+        val (str, i) = next
+        if (i == 0) acc + "" else acc + str + "\n"
+    }
   }
 
   def matchNodes(rawCommit: String): Iterator[String] = {
