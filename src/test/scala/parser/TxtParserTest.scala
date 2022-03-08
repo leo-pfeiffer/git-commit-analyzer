@@ -219,13 +219,47 @@ class TxtParserTest extends AnyFunSuite {
   test("'matchHeader' should read long header") {
     val longCommit = "commit 30eb60e4d65c29b6459fc84c32613180a828cb79 (HEAD -> master)\n" +
       "Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>\n" +
-      "Date:   Tue Mar 8 10:24:38 2022 +0000\n\n    " +
-      "This is a very very very long message Please scan QR code for Test and Protect or ask a member of staff for a form rector's cafe wholesome culture macbook pro nirvana\n\n" +
+      "Date:   2022-03-08T08:11:29+00:00\n\n    " +
+      "This is a very very very long message Please scan " +
+      "QR code for Test and Protect or ask a member of staff " +
+      "for a form rector's cafe wholesome culture macbook pro nirvana\n\n" +
       "0       0       nkanslan.log\n"
 
     val result = TxtParser.matchHeader(longCommit)
     assert(result.length.equals(166))
   }
 
+  test("'matchBody' should read one-part body") {
+    val longCommit = "commit 92a435cf26bc71c8c31dca6c6fdfa63ca80dd4be (HEAD -> master)" +
+      "\nAuthor: leo-pfeiffer <leopold.pfeiffer@icloud.com>\n" +
+      "Date:   2022-03-08T10:45:17+00:00\n\n" +
+      "    feat: an addition with a long commit body\n" +
+      "    \n" +
+      "    Lorem Ipsum is simply dummy text." +
+      "\n\n" +
+      "1       0       nkanslan.log"
+
+    val expected = "Lorem Ipsum is simply dummy text.\n"
+
+    val result = TxtParser.matchBody(longCommit)
+    assert(result.equals(expected))
+  }
+
+  test("'matchBody' should read multi-part body") {
+    val longCommit = "commit 92a435cf26bc71c8c31dca6c6fdfa63ca80dd4be (HEAD -> master)" +
+      "\nAuthor: leo-pfeiffer <leopold.pfeiffer@icloud.com>\n" +
+      "Date:   2022-03-08T10:45:17+00:00\n\n" +
+      "    feat: a long body with two paragraphs\n    \n    " +
+      "Foo bar 1.\n" +
+      "    \n    " +
+      "Foo bar 2." +
+      "\n\n" +
+      "1       0       nkanslan.log"
+
+    val expected = "Foo bar 1.\nFoo bar 2.\n"
+
+    val result = TxtParser.matchBody(longCommit)
+    assert(result.equals(expected))
+  }
 
 }
