@@ -63,8 +63,7 @@ object TxtParser {
   }
 
   def matchNodes(rawCommit: String): Iterator[String] = {
-    // todo
-    matchAll(rawCommit, raw"^([-\d]+)[\t\s]+([-\d]+)[\t\s]+.*".r)
+    matchAll(rawCommit, raw"\n[-\d]+[\s\t]+[-\d]+[\s\t]+([\S].+)".r)
   }
 
   def matchNodeAddition(rawNode: String): Int = {

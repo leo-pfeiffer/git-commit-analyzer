@@ -1,6 +1,8 @@
 package com.github.leopfeiffer.gitcommitanalyzer
 package parser
 
+import filereader.FileReader
+
 import org.scalatest.funsuite.AnyFunSuite
 
 import java.time.{LocalDate, LocalDateTime, LocalTime}
@@ -262,4 +264,70 @@ class TxtParserTest extends AnyFunSuite {
     assert(result.equals(expected))
   }
 
+  test("'matchNodes' should match single nodes") {
+    val commit: String = "commit 5acf2d7aebcad417c5d73cc5dc41f66596786a98" +
+      "\nAuthor: leo-pfeiffer <leopold.pfeiffer@icloud.com>" +
+      "\nDate:   2022-03-07T07:24:29+00:00" +
+      "\n\n    feat: new file" +
+      "\n\n" +
+      "2\t0\thello.txt"
+
+    val result = TxtParser.matchNodes(commit).toSeq
+    assert(result.length.equals(1))
+  }
+
+  test("'matchNodes' should match multiple nodes") {
+    val commit: String = "commit 5acf2d7aebcad417c5d73cc5dc41f66596786a98" +
+      "\nAuthor: leo-pfeiffer <leopold.pfeiffer@icloud.com>" +
+      "\nDate:   2022-03-07T07:24:29+00:00" +
+      "\n\n    feat: new file" +
+      "\n\n" +
+      "0\t0\tanotherfile.txt\n" +
+      "2\t0\thello.txt"
+
+    val result = TxtParser.matchNodes(commit).toSeq
+    assert(result.length.equals(2))
+  }
+
+  test("'matchNodes' should match hyphen - num - node") {
+    val commit: String = "commit 5acf2d7aebcad417c5d73cc5dc41f66596786a98" +
+      "\nAuthor: leo-pfeiffer <leopold.pfeiffer@icloud.com>" +
+      "\nDate:   2022-03-07T07:24:29+00:00" +
+      "\n\n    feat: new file" +
+      "\n\n" +
+      "-\t0\thello.txt"
+
+    val result = TxtParser.matchNodes(commit).toSeq
+    assert(result.length.equals(1))
+  }
+
+  test("'matchNodes' should match num - hyphen - node") {
+    val commit: String = "commit 5acf2d7aebcad417c5d73cc5dc41f66596786a98" +
+      "\nAuthor: leo-pfeiffer <leopold.pfeiffer@icloud.com>" +
+      "\nDate:   2022-03-07T07:24:29+00:00" +
+      "\n\n    feat: new file" +
+      "\n\n" +
+      "1\t-\thello.txt"
+
+    val result = TxtParser.matchNodes(commit).toSeq
+    assert(result.length.equals(1))
+  }
+
+  test("'matchNodes' should match hyphen - hyphen - node") {
+    val commit: String = "commit 5acf2d7aebcad417c5d73cc5dc41f66596786a98" +
+      "\nAuthor: leo-pfeiffer <leopold.pfeiffer@icloud.com>" +
+      "\nDate:   2022-03-07T07:24:29+00:00" +
+      "\n\n    feat: new file" +
+      "\n\n" +
+      "-\t-\thello.txt"
+
+    val result = TxtParser.matchNodes(commit).toSeq
+    assert(result.length.equals(1))
+  }
+
+  test("'splitIntoCommits' should produce correct number of splits") {
+    val content = FileReader.read("src/test/resources/test-gitlog.txt")
+    val result = TxtParser.splitIntoCommits(content)
+    assert(result.length.equals(13))
+  }
 }
