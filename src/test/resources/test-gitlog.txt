@@ -24,6 +24,7 @@ Date:   2022-03-06T21:44:05+00:00
     And this is the body of the commit message
 
 1	1	hello.txt
+-	1	hello.txt
 
 commit 1b015d07b318648b18509407d86344357b6db8e2
 Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
@@ -40,6 +41,7 @@ Date:   2022-03-06T18:42:50+00:00
     test: added tests
 
 1	1	hello.txt
+1	-	hello.txt
 
 commit 2a511e38aa17f163387753d675673d6fbf4652e8
 Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
@@ -64,6 +66,7 @@ Date:   2022-03-06T18:42:04+00:00
     style: some style changes
 
 1	1	hello.txt
+-	-	hello.txt
 
 commit c4dda3065cdf651c6958d06adc3ed0b2536a4992
 Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
@@ -87,7 +90,7 @@ Date:   2022-03-06T18:41:34+00:00
 
     fix: fixed something
 
-1	1	hello.txt
+1	12	hello.txt
 
 commit 9387538d179b2536abe1acbcc8fe02158cdfd7e2
 Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>
@@ -95,7 +98,7 @@ Date:   2022-03-06T18:41:13+00:00
 
     feat: another feature
 
-1	1	hello.txt
+13	1	hello.txt
 
 commit 25fd66d0b64b9dd3c292da645c53ae9cd06016e9
 Author: leo-pfeiffer <leopold.pfeiffer@icloud.com>

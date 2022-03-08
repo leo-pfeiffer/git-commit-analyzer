@@ -330,4 +330,6 @@ class TxtParserTest extends AnyFunSuite {
     val result = TxtParser.splitIntoCommits(content)
     assert(result.length.equals(13))
   }
+
+  // todo more unit tests for splitIntoCommits
 }

@@ -22,6 +22,7 @@ object TxtParser {
         matchAuthorMail(x),
         LocalDateTime.parse(matchTimestamp(x), ISO_DATE_TIME),
         matchHeader(x),
+        matchBody(x),
         makeNodes(x)
       )
     }))
@@ -39,11 +40,11 @@ object TxtParser {
   }
 
   def matchAuthorName(rawCommit: String): String = {
-    matchPattern(rawCommit, raw"(?<=^Author:\s)[\S].*(?=\s<)".r)
+    matchPattern(rawCommit, raw"(?<=Author:\s)[\S].*(?=\s<)".r)
   }
 
   def matchAuthorMail(rawCommit: String): String = {
-    matchPattern(rawCommit, raw"(?<=^Author:\s.*<)[\S].*(?=>)".r)
+    matchPattern(rawCommit, raw"(?<=Author:\s.*<)[\S].*(?=>)".r)
   }
 
   def matchTimestamp(rawCommit: String): String = {
@@ -63,23 +64,23 @@ object TxtParser {
   }
 
   def matchNodes(rawCommit: String): Iterator[String] = {
-    matchAll(rawCommit, raw"\n[-\d]+[\s\t]+[-\d]+[\s\t]+([\S].+)".r)
+    matchAll(rawCommit, raw"\n?[-\d]+[\s\t]+[-\d]+[\s\t]+([\S].+)".r)
   }
 
   def matchNodeAddition(rawNode: String): Int = {
-    val num = matchGroup(rawNode, raw"^(\d+)([\s\t]+)([-\d]+)([\s\t]+)([\S].+)".r, 1)
-    val hyphen = matchGroup(rawNode, raw"^(-)([\s\t]+)([-\d]+)([\s\t]+)([\S].+)".r, 1)
+    val num = matchGroup(rawNode, raw"\n?(\d+)([\s\t]+)([-\d]+)([\s\t]+)([\S].+)".r, 1)
+    val hyphen = matchGroup(rawNode, raw"\n?(-)([\s\t]+)([-\d]+)([\s\t]+)([\S].+)".r, 1)
     if hyphen.equals("") then num.toInt else 0
   }
 
   def matchNodeDeletion(rawNode: String): Int = {
-    val num = matchGroup(rawNode, raw"^([-\d]+)([\s\t]+)(\d+)([\s\t]+)([\S].+)".r, 3)
-    val hyphen = matchGroup(rawNode, raw"^([-\d]+)([\s\t]+)(-)([\s\t]+)([\S].+)".r, 3)
+    val num = matchGroup(rawNode, raw"\n?([-\d]+)([\s\t]+)(\d+)([\s\t]+)([\S].+)".r, 3)
+    val hyphen = matchGroup(rawNode, raw"\n?([-\d]+)([\s\t]+)(-)([\s\t]+)([\S].+)".r, 3)
     if hyphen.equals("") then num.toInt else 0
   }
 
   def matchNodeText(rawNode: String): String = {
-    matchGroup(rawNode, raw"^[-\d]+[\s\t]+[-\d]+[\s\t]+([\S].+)".r, 1)
+    matchGroup(rawNode, raw"\n?[-\d]+[\s\t]+[-\d]+[\s\t]+([\S].+)".r, 1)
     }
 
   def makeNodeHelper(rawNode: String): Node = {
