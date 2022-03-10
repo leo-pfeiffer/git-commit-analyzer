@@ -44,3 +44,4 @@ bin/
 
 #general
 *.class
+/.env
