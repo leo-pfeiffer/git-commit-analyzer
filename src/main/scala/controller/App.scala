@@ -1,31 +1,43 @@
 package com.github.leopfeiffer.gitcommitanalyzer
 package controller
 
+import gitlog.{GitLog, Node}
+
+import upickle.default.*
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter.ISO_DATE_TIME
 import filereader.FileReader
 import parser.TxtParser
-import utils.formats
+import utils.*
 
-import org.json4s._
-import org.json4s.jackson.Serialization.{read, write}
+import ujson.Value.Value
 
 
 object App extends cask.MainRoutes{
+
   @cask.get("/")
   def hello(): String = {
     "Hello World!"
   }
 
-  // todo check how the getJson works and see how we can use ujson
+  /**
+   * Test by reading the test git log and returning the JSON version
+   * */
   @cask.get("/test")
-  def test(): String = {
+  def test(): Value = {
     val content = FileReader.read("src/test/resources/test-gitlog.txt")
     val log = TxtParser.main(content)
-    write(log)
+    ujson.read(write(log))
   }
 
-  @cask.post("/do-thing")
-  def doThing(request: cask.Request): String = {
-    request.text().reverse
+  /**
+   * Parse plain git log to JSON.
+   * */
+  @cask.post("/parse")
+  def parse(request: cask.Request): Value = {
+    val log = TxtParser.main(request.text())
+    ujson.read(write(log))
   }
 
   initialize()
