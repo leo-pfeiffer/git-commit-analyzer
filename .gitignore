@@ -45,3 +45,4 @@ bin/
 #general
 *.class
 /.env
+/src/main/resources/dao/file.db

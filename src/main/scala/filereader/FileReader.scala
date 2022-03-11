@@ -5,17 +5,17 @@ import scala.io.Source
 
 object FileReader {
 
-  def sayHello(name: String): Unit = {
-    println("Hello, " + name + "!")
+  def read(path: String): String = {
+    read(path, "\n")
   }
 
-  def read(path: String): String = {
+  def read(path: String, delim: String): String = {
     val bufferedSource = Source.fromFile(path)
     val stringBuilder = new StringBuilder()
     try {
       for (line <- bufferedSource.getLines) {
         stringBuilder.append(line)
-        stringBuilder.append("\n")
+        stringBuilder.append(delim)
       }
     } finally {
       bufferedSource.close
