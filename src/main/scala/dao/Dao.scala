@@ -21,9 +21,9 @@ val xa = Transactor.fromDriverManager[IO](
   "" // password
 )
 
-object Dao extends App {
+object Dao {
 
-  def sqlString(s: String) = Fragment.const(s)
+  def sqlString(s: String): Fragment = Fragment.const(s)
 
   def fileExecute(path: String): Unit = {
     val commands = FileReader.read(path, "")
@@ -43,6 +43,22 @@ object Dao extends App {
     fileExecute("src/main/resources/dao/schema.sql")
   }
 
-  doSetup()
+  def insertUser(email: String): Unit = {
+    sql"""INSERT INTO user (email) VALUES ($email)"""
+      .update
+      .run
+      .transact(xa)
+      .unsafeRunSync()
+  }
+
+  def deleteUser(userId: Int): Unit = {
+    sql"""DELETE FROM user WHERE user_id=$userId"""
+      .update
+      .run
+      .transact(xa)
+      .unsafeRunSync()
+  }
+
+  // doSetup()
   
 }

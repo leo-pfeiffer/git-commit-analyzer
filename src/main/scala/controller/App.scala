@@ -8,6 +8,7 @@ import upickle.default.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter.ISO_DATE_TIME
 import filereader.FileReader
+import dao.*
 import parser.TxtParser
 import utils.*
 
@@ -71,7 +72,26 @@ object App extends cask.MainRoutes{
         println(obj("error"))
         obj("error")
       }
+  }
 
+  @cask.get("/delete/:user")
+  def deleteUser(user: Int): String = {
+    try {
+      Dao.deleteUser(user)
+      "Done!"
+    } catch {
+      case e: java.sql.SQLException => e.getMessage
+    }
+  }
+
+  @cask.get("/create")
+  def createUser(): String = {
+    try {
+      Dao.insertUser("leo@me.com")
+      "Done"
+    } catch {
+      case e: java.sql.SQLException => e.getMessage
+    }
   }
 
   initialize()
