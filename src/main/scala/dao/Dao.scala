@@ -43,20 +43,35 @@ object Dao {
     fileExecute("src/main/resources/dao/schema.sql")
   }
 
-  def insertUser(email: String): Unit = {
-    sql"""INSERT INTO user (email) VALUES ($email)"""
-      .update
-      .run
-      .transact(xa)
-      .unsafeRunSync()
+  def executeUpdate(query: ConnectionIO[Int]): QueryResult = {
+    try {
+      query.transact(xa).unsafeRunSync()
+      Success("Success.", None)
+    } catch {
+      case e: java.sql.SQLException => Fail(e.getMessage)
+    }
   }
 
-  def deleteUser(userId: Int): Unit = {
-    sql"""DELETE FROM user WHERE user_id=$userId"""
-      .update
-      .run
-      .transact(xa)
-      .unsafeRunSync()
+  def insertUser(email: String): QueryResult = {
+    executeUpdate(sql"""INSERT INTO user (email) VALUES ($email)""".update.run)
+  }
+
+  def deleteUser(userId: Int): QueryResult = {
+    executeUpdate(sql"""DELETE FROM user WHERE user_id=$userId""".update.run)
+  }
+
+  def findUser(userId: Int): QueryResult = {
+    try {
+      val result: String = sql"""SELECT email FROM user WHERE user_id=$userId"""
+        .query[String]
+        .to[List]
+        .transact(xa)
+        .unsafeRunSync()
+        .take(1)(0)
+      Success("Success.", result)
+    } catch {
+      case e: java.sql.SQLException => Fail(e.getMessage)
+    }
   }
 
   // doSetup()

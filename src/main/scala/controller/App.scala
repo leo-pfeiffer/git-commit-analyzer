@@ -76,21 +76,25 @@ object App extends cask.MainRoutes{
 
   @cask.get("/delete/:user")
   def deleteUser(user: Int): String = {
-    try {
-      Dao.deleteUser(user)
-      "Done!"
-    } catch {
-      case e: java.sql.SQLException => e.getMessage
+    Dao.deleteUser(user) match {
+      case Fail(msg) => s"This didn't work: $msg"
+      case Success(_, _) => "Yayy!"
     }
   }
 
   @cask.get("/create")
   def createUser(): String = {
-    try {
-      Dao.insertUser("leo@me.com")
-      "Done"
-    } catch {
-      case e: java.sql.SQLException => e.getMessage
+    Dao.insertUser("leo@me.com") match {
+      case Fail(msg) => s"This didn't work: $msg"
+      case Success(_, _) => "Yayy!"
+    }
+  }
+
+  @cask.get("/get-user/:user")
+  def getUser(user: Int): String = {
+    Dao.findUser(user) match {
+      case Fail(msg) => s"This didn't work: $msg"
+      case Success(_, data: String) => s"User: $data"
     }
   }
 
