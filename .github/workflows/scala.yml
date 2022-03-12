@@ -19,4 +19,6 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
     - name: Run tests
-      run: sbt test
+      run: |
+        cd server
+        sbt test
