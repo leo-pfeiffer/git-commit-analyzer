@@ -38,4 +38,29 @@
   text-align: center;
   min-height: 75vh;
 }
+
+@media (min-width: 500px) {
+  .center-screen {
+    padding-right: 50px;
+    padding-left: 50px;
+  }
+}
+
+@media (max-width: 500px) {
+  .center-screen {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+.card-footer-item {
+  cursor: pointer;
+}
+
+.card-footer-item.is-disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  color: #c0c0c0;
+  background-color: #ffffff;
+}
 </style>
