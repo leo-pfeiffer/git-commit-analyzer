@@ -1,0 +1,30 @@
+<template>
+  <div class="home">
+    <section>
+      <div class="container center-screen">
+        <div class="card">
+          <div class="card-content">
+            <div class="columns">
+              <div class="column">
+                <button class="button is-primary" @click="() => this.$router.push({name: 'ImportText'})">Continue with Text</button>
+              </div>
+              <div class="column">
+                <button class="button is-dark" @click="() => this.$router.push({name: 'ImportGithub'})">Continue with GitHub</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: 'Home',
+  components: {}
+}
+
+</script>
+
