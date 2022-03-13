@@ -18,6 +18,8 @@ import ujson.Value.Value
 
 object App extends cask.MainRoutes{
 
+  override def port: Int = 9000
+
   val ghClientId: String = System.getenv("CLIENT_ID")
   val ghClientSecret: String = System.getenv("CLIENT_SECRET")
   val ghBaseUri = "https://github.com/login/oauth/access_token"
