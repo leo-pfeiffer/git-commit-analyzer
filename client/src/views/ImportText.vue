@@ -9,7 +9,7 @@
           <div class="card-content">
             <div class="is-center">
               <span>Run </span><br>
-              <span class="is-family-code">git log --numstat --date=iso-strict > gitlog.txt</span><br>
+              <CopySpan :text="'git log --numstat --date=iso-strict > gitlog.txt'" :class="['is-family-code']"/><br>
               <span> and paste the content of the file.</span>
             </div>
             <hr>
@@ -41,9 +41,10 @@
 
 <script>
 
+import CopySpan from "@/components/CopySpan";
 export default {
   name: 'ImportText',
-  components: {},
+  components: {CopySpan},
   data() {
     return {
       inputValid: false,
