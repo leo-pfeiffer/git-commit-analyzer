@@ -34,6 +34,7 @@
 <script>
 import { Plotly } from 'vue-plotly';
 import { mapState } from "vuex";
+import LogHandler from "@/assets/processing";
 
 export default {
   name: 'Dashboard',
@@ -54,18 +55,21 @@ export default {
       gitlog: (state) => state.gitlog
     }),
     data1: function() {
+      const logHandler = new LogHandler(this.gitlog)
+      const data = logHandler.aggregateBy(LogHandler.kfHash, LogHandler.afNumAdditions)
       return [{
-        x: [1,2,3,4],
-        y: [10,15,13,17],
-        z: [10,15,13,17],
-        type: "heatmap"
+        x: Object.keys(data),
+        y: Object.keys(data).map(e => data[e]),
+        type: "bar"
       }]
     },
     data2: function() {
+      const logHandler = new LogHandler(this.gitlog)
+      const data = logHandler.aggregateBy(LogHandler.kfDate, LogHandler.afNumCommits)
       return [{
-        x: [1,2,3,4],
-        y: [10,15,13,17],
-        type: "bar"
+        x: Object.keys(data),
+        y: Object.keys(data).map(e => data[e]),
+        type: "line"
       }]
     },
     data3: function() {

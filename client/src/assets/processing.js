@@ -1,7 +1,7 @@
 import {data} from "@/assets/test-log"
 // const {data} = require("./test-log.js")
 
-const LogHandler = class {
+export default class LogHandler {
     constructor(gitlog) {
         this.data = [...gitlog.log]
         this.data.forEach((e) => {
@@ -94,7 +94,3 @@ const test = function() {
 }
 
 test()
-
-module.exports = {
-    LogHandler
-}
