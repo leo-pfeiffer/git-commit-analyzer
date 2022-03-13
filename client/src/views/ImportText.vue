@@ -1,8 +1,8 @@
 <template>
   <div class="home">
     <section>
-      <div class="container center-screen">
-        <div class="card">
+      <div id="text-import-container" class="container center-screen">
+        <div id="text-import-card" class="card">
           <div class="card-header">
             <div class="card-header-title">Import with Text</div>
           </div>
@@ -13,8 +13,9 @@
               <span> and paste the content of the file.</span>
             </div>
             <hr>
-            <textarea class="textarea" placeholder="commit 2aae6c35 ..."
-                      v-model="inputText" @input="setInputValidFalse"></textarea>
+            <textarea class="textarea is-family-code" placeholder="commit 2aae6c35 ..."
+                      v-model="inputText" @input="setInputValidFalse"
+                      v-bind:class="{'is-success': inputValid, 'is-danger': showWarning}"></textarea>
 
             <div id="warning-box" v-if="showWarning">
               <hr>
@@ -82,5 +83,16 @@ export default {
 #warning-msg {
   color: red;
 }
+
+#text-import-card {
+  width: 100%
+}
+
+@media (min-width: 850px) {
+  #text-import-container {
+    width: 800px;
+  }
+}
+
 
 </style>

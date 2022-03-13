@@ -63,4 +63,13 @@
   color: #c0c0c0;
   background-color: #ffffff;
 }
+
+.v-scroll {
+  overflow-y: auto;
+}
+
+.h-scroll {
+  overflow-x: auto;
+}
+
 </style>
