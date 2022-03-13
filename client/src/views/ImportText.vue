@@ -1,8 +1,8 @@
 <template>
   <div class="home">
     <section>
-      <div id="text-import-container" class="container center-screen">
-        <div id="text-import-card" class="card">
+      <div class="container center-screen import-container">
+        <div class="card import-card">
           <div class="card-header">
             <div class="card-header-title">Import with Text</div>
           </div>
@@ -19,7 +19,7 @@
 
             <div id="warning-box" v-if="showWarning">
               <hr>
-              <div id="warning-msg">
+              <div class="warning-msg">
                 {{ warningMsg }}
               </div>
             </div>
@@ -28,7 +28,7 @@
             <div class="card-footer-item" @click="verifyInput">
               Verify
             </div>
-            <div class="card-footer-item" v-bind:class="{'is-disabled': !inputValid}" @click="() => this.$router.push({name: 'Dashboard'})">
+            <div class="card-footer-item" v-bind:class="{'is-disabled': !inputValid}" @click="routeToDashboard">
               Go to Dashboard
             </div>
           </div>
@@ -71,28 +71,14 @@ export default {
     },
     setInputValidTrue: function() {
       this.inputValid = true
+      this.showWarning = false
+    },
+    routeToDashboard: function() {
+      if (this.inputValid) {
+        this.$router.push({name: 'Dashboard'})
+      }
     }
-
   }
 }
 
 </script>
-
-<style scoped>
-
-#warning-msg {
-  color: red;
-}
-
-#text-import-card {
-  width: 100%
-}
-
-@media (min-width: 850px) {
-  #text-import-container {
-    width: 800px;
-  }
-}
-
-
-</style>

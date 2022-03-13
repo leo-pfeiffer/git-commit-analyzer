@@ -72,4 +72,26 @@
   overflow-x: auto;
 }
 
+@media (min-width: 850px) {
+  .container.import-container {
+    width: 800px;
+  }
+}
+
+.card.import-card {
+  width: 100%
+}
+
+.warning-msg {
+  color: red;
+}
+
+.select.is-full {
+  width: 100%;
+}
+
+.select.is-full > select {
+  width: 100%;
+}
+
 </style>

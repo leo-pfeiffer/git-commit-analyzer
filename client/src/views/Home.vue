@@ -6,10 +6,10 @@
           <div class="card-content">
             <div class="columns">
               <div class="column">
-                <button class="button is-primary" @click="() => this.$router.push({name: 'ImportText'})">Continue with Text</button>
+                <button class="button is-primary" @click="continueWithText">Continue with Text</button>
               </div>
               <div class="column">
-                <button class="button is-dark" @click="() => this.$router.push({name: 'ImportGithub'})">Continue with GitHub</button>
+                <button class="button is-dark" @click="continueWithGithub">Continue with GitHub</button>
               </div>
             </div>
           </div>
@@ -23,7 +23,16 @@
 
 export default {
   name: 'Home',
-  components: {}
+  components: {},
+  methods: {
+    continueWithGithub: function() {
+      // call OAuth, if successful, reroute
+      this.$router.push({name: 'ImportGithub'})
+    },
+    continueWithText: function() {
+      this.$router.push({name: 'ImportText'})
+    }
+  }
 }
 
 </script>
