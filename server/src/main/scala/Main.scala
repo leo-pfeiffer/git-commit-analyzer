@@ -116,12 +116,12 @@ object Main extends cask.MainRoutes {
     ujson.Obj("gitlogId" -> gitlogId)
   }
 
-  @cask.get("/gitlog")
+  @cask.route("/gitlog", methods = Seq("get"))
   def getAllGitlog(request: cask.Request): Value = {
     ujson.Arr(ujson.Obj("gitlogId" -> 1))
   }
 
-  @cask.post("/gitlog")
+  @cask.route("/gitlog", methods = Seq("post"))
   def createGitlog(request: cask.Request): Value = {
     val log = TxtParser.main(request.text())
     ujson.read(write(log))
