@@ -32,7 +32,8 @@
 </template>
 
 <script>
-import { Plotly } from 'vue-plotly'
+import { Plotly } from 'vue-plotly';
+import { mapState } from "vuex";
 
 export default {
   name: 'Dashboard',
@@ -49,6 +50,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      gitlog: (state) => state.gitlog
+    }),
     data1: function() {
       return [{
         x: [1,2,3,4],

@@ -26,10 +26,12 @@
           </div>
           <div class="card-footer">
             <div class="card-footer-item" @click="verifyInput">
-              Verify
+              <Loader height="20px" width="20px" thickness="3px" color="#7957d5" v-if="loadingVerify"/>
+              <span v-if="!loadingVerify">Verify</span>
             </div>
-            <div class="card-footer-item" v-bind:class="{'is-disabled': !inputValid}" @click="routeToDashboard">
-              Go to Dashboard
+            <div class="card-footer-item is-loading" v-bind:class="{'is-disabled': !inputValid}" @click="routeToDashboard">
+              <Loader height="20px" width="20px" thickness="3px" color="#7957d5" v-if="loadingDashboard"/>
+              <span v-if="!loadingDashboard">Go to Dashboard</span>
             </div>
           </div>
 
@@ -42,30 +44,48 @@
 <script>
 
 import CopySpan from "@/components/CopySpan";
+import Loader from "@/components/Loader";
+import { mapState } from "vuex";
 import {postTextLog} from "@/api/api";
 export default {
   name: 'ImportText',
-  components: {CopySpan},
+  components: {CopySpan, Loader},
   data() {
     return {
       inputValid: false,
       inputText: "",
       warningMsg: "",
       showWarning: false,
+      loadingDashboard: false,
+      loadingVerify: false,
     }
+  },
+  computed: {
+    ...mapState({
+      gitlog: (state) => state.gitlog
+    })
   },
   methods: {
     verifyInput: async function() {
-      // todo do verification
+      if (this.inputValid === "") {
+        this.warningMsg = "Please paste your git log first."
+        this.showWarning = true;
+        return
+      }
+
+      this.loadingVerify = true;
       const gitlog = await postTextLog(this.inputText);
+      this.loadingVerify = false;
       console.log(gitlog)
-      if (this.inputText === "error") {
+
+      if (this.inputText === "error" || gitlog === undefined || gitlog === null) {
         this.warningMsg = "" +
             "We couldn't parse your input. Please check if you pasted the git log correctly and " +
             "without modification."
         this.showWarning = true;
       } else {
         this.setInputValidTrue()
+        this.$store.commit("setGitlog", gitlog);
       }
     },
     setInputValidFalse: function()
@@ -79,6 +99,7 @@ export default {
     },
     routeToDashboard: function() {
       if (this.inputValid) {
+        this.loadingDashboard = true
         this.$router.push({name: 'Dashboard'})
       }
     }

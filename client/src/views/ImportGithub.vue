@@ -25,10 +25,12 @@
           </div>
           <div class="card-footer">
             <div class="card-footer-item" @click="verifySelection">
-              Verify
+              <Loader height="20px" width="20px" thickness="3px" color="#7957d5" v-if="loadingVerify"/>
+              <span v-if="!loadingVerify">Verify</span>
             </div>
             <div class="card-footer-item" v-bind:class="{'is-disabled': !selectionValid}" @click="routeToDashboard">
-              Go to Dashboard
+              <Loader height="20px" width="20px" thickness="3px" color="#7957d5" v-if="loadingDashboard"/>
+              <span v-if="!loadingDashboard">Go to Dashboard</span>
             </div>
           </div>
 
@@ -39,10 +41,10 @@
 </template>
 
 <script>
-
+import Loader from "@/components/Loader";
 export default {
   name: 'ImportGithub',
-  components: {},
+  components: {Loader},
   data() {
     return {
       repositories: ["repo1", "error", "repo3", "repo4", "repo5", "repo6", "repo7"],
@@ -50,6 +52,8 @@ export default {
       selectedValue: "",
       warningMsg: "",
       showWarning: false,
+      loadingDashboard: false,
+      loadingVerify: false,
     }
   },
   methods: {
@@ -60,7 +64,9 @@ export default {
             "We couldn't load your repository. Please reload the page and try again."
         this.showWarning = true;
       } else {
+        this.loadingVerify = true;
         this.setSelectionValidTrue()
+        this.loadingVerify = false;
       }
     },
     setSelectionValidFalse: function()
@@ -73,6 +79,7 @@ export default {
     },
     routeToDashboard: function() {
       if (this.selectionValid) {
+        this.loadingDashboard = true
         this.$router.push({name: 'Dashboard'})
       }
     }
