@@ -11,11 +11,17 @@ import dao.*
 import parser.TxtParser
 import utils.*
 
+import cask.main.Routes
+import io.undertow.server.handlers.BlockingHandler
 import requests.post
-
 import ujson.Value.Value
 
 object Main extends cask.MainRoutes {
+
+  // Use the cors handler instead
+  override def defaultHandler: BlockingHandler = new BlockingHandler(
+    new CorsHandler(dispatchTrie, mainDecorators, debugMode, handleNotFound, handleMethodNotAllowed, handleEndpointError)
+  )
 
   override def port: Int = 9000
 
