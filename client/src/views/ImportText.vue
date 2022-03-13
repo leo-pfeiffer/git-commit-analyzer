@@ -42,6 +42,7 @@
 <script>
 
 import CopySpan from "@/components/CopySpan";
+import {postTextLog} from "@/api/api";
 export default {
   name: 'ImportText',
   components: {CopySpan},
@@ -54,8 +55,10 @@ export default {
     }
   },
   methods: {
-    verifyInput: function() {
+    verifyInput: async function() {
       // todo do verification
+      const gitlog = await postTextLog(this.inputText);
+      console.log(gitlog)
       if (this.inputText === "error") {
         this.warningMsg = "" +
             "We couldn't parse your input. Please check if you pasted the git log correctly and " +
