@@ -46,7 +46,7 @@
 import CopySpan from "@/components/CopySpan";
 import Loader from "@/components/Loader";
 import { mapState } from "vuex";
-import {postTextLog} from "@/api/api";
+import {postTextLog} from "@/assets/api";
 export default {
   name: 'ImportText',
   components: {CopySpan, Loader},
