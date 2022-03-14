@@ -25,7 +25,7 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
   // todo
   @cask.get("/gh-logout")
   def ghLogout(request: cask.Request) = {
-
+    "logged out"
   }
 
   @cask.get("/_oauth-callback")
@@ -62,22 +62,27 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
         ujson.Obj("Error" -> "Token not found. Authenticate via /gh-login first.")
   }
 
-  @cask.get("/github/repos")
+  @cask.route("/github/repos", methods = Seq("get"))
   def githubRepos(request: cask.Request): Value = {
 
-    val token = request.headers.get("authentication")
+    val token = request.headers("authorization").head
 
     // todo how to handle multiple pages?
     //  idea: repeat until all fetched: get page, append results
     val url = s"$ghApiBaseUri/user/repos"
     val r = get(url, headers = Map(
       "accept" -> "application/vnd.github.v3+json",
-      "authorization" -> s"token $token"
+      "authorization" -> s"$token"
     ))
 
     ujson.read(r.data.toString)
 
     // todo map only names and return
+  }
+
+  @cask.route("/github/repos", methods = Seq("options"))
+  def cors(request: cask.Request) = {
+    "allow_cors"
   }
 
   @cask.get("/github/commits/:org/:repo")
