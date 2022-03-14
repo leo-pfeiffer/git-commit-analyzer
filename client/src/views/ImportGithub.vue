@@ -42,6 +42,7 @@
 
 <script>
 import Loader from "@/components/Loader";
+import {getCommits, getRepos} from "@/assets/api";
 export default {
   name: 'ImportGithub',
   components: {Loader},
@@ -56,14 +57,19 @@ export default {
       loadingVerify: false,
     }
   },
+  async mounted() {
+    this.repositories = await getRepos()
+  },
   methods: {
-    verifySelection: function() {
+    verifySelection: async function() {
       // todo do verification
       if (this.selectedValue === "error") {
         this.warningMsg = "" +
             "We couldn't load your repository. Please reload the page and try again."
         this.showWarning = true;
       } else {
+        const commits = await getCommits(this.selectedValue)
+        console.log(commits)
         this.loadingVerify = true;
         this.setSelectionValidTrue()
         this.loadingVerify = false;

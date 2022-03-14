@@ -14,21 +14,25 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
   val ghScope = "scope=user%20repo:status"
   val ghApiBaseUri = "https://api.github.com"
   val ghRedirectUri = "http://localhost:9000/_oauth-callback"
+  val cookieName = "GtaGhAuthToken"
 
   // GITHUB AUTH FLOW
-  @cask.get("/gh-login")
+  @cask.get("/github/login")
   def ghLogin(request: cask.Request) = {
     val url = s"$ghAuthorizeUri?client_id=$ghClientId&redirect_uri=$ghRedirectUri&scope=$ghScope"
     cask.Redirect(url)
   }
 
-  @cask.route("/gh-login", methods = Seq("options"))
+  @cask.route("/github/login", methods = Seq("options"))
   def corsGhLogin(request: cask.Request) = {"allow_cors"}
 
-  // todo
-  @cask.get("/gh-logout")
-  def ghLogout(request: cask.Request) = {
-    "logged out"
+  // todo this doesn't work yet
+  @cask.get("/github/logout")
+  def ghLogout() = {
+    cask.Response(
+      "Cookies Deleted!",
+      cookies = Seq(cask.Cookie(cookieName, "", expires = java.time.Instant.EPOCH))
+    )
   }
 
   @cask.get("/_oauth-callback")
@@ -43,10 +47,9 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
 
     // todo do sth like this instead: https://stackoverflow.com/a/55063199
     try
-      println("Cookie set: " + obj("access_token"))
       cask.Response(
         "Cookies Set!",
-        cookies = Seq(cask.Cookie("GtaGhAuthToken", obj("access_token").value.toString))
+        cookies = Seq(cask.Cookie(cookieName, obj("access_token").value.toString))
       )
     catch
       case e: Exception =>
@@ -54,7 +57,10 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
         cask.Response("Error :(")
   }
 
-  @cask.get("/gh-token")
+  /**
+   * Retrieve the token set during the login
+   * */
+  @cask.get("/github/token")
   def ghToken(GtaGhAuthToken: cask.Cookie): Value = {
     try
       val token = GtaGhAuthToken.value
@@ -64,6 +70,9 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
         println("Cookie not found")
         ujson.Obj("Error" -> "Token not found. Authenticate via /gh-login first.")
   }
+
+  @cask.route("/github/token", methods = Seq("options"))
+  def corsGhToken(request: cask.Request) = {"allow_cors"}
 
   @cask.route("/github/repos", methods = Seq("get"))
   def githubRepos(request: cask.Request): Value = {
@@ -86,11 +95,15 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
   @cask.route("/github/repos", methods = Seq("options"))
   def corsGithubRepos(request: cask.Request) = {"allow_cors"}
 
-  @cask.get("/github/commits/:org/:repo")
-  def githubCommitsForRepo(org: String, repo: String): Value = {
+  @cask.get("/github/commits/:repo")
+  def githubCommitsForRepo(request: cask.Request, repo: String): Value = {
+
+    val token = request.headers("authorization").head
+    val owner = "leo-pfeiffer"
 
     // todo: again, handle multiple pages
-    val url = s"$ghApiBaseUri/repos/${org}/${repo}/commits?type=all&sort=full_name"
+    // /repos/{owner}/{repo}/commits
+    val url = s"$ghApiBaseUri/repos/${owner}/${repo}/commits?type=all&sort=full_name"
     val r = get(url, headers = Map("accept" -> "application/vnd.github.v3+json"))
 
     ujson.read(r.data.toString)
@@ -101,8 +114,10 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
     //  -> to get stats, need to call GET /repos/{owner}/{repo}/commits/{ref} on every commit
     //  -> will be VERY time consuming
     //  -> single api call to endpoint is ~ 50-300 ms... for 100 commits that's already 30s
-
   }
+
+  @cask.route("/github/commits/:repo", methods = Seq("options"))
+  def corsGithubCommitsForRepo(request: cask.Request, repo: String) = {"allow_cors"}
 
   initialize()
 

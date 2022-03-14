@@ -1,3 +1,4 @@
+const {getCookie} = require("@/assets/utils");
 const BASE_URL = "http://localhost:9000"
 
 const postTextLog = function(gitlog) {
@@ -14,7 +15,7 @@ const postTextLog = function(gitlog) {
 }
 
 const githubAuth = function() {
-    const url = `${BASE_URL}/gh-login`
+    const url = `${BASE_URL}/github/login`
 
     const createOauthWindow = function(url, name) {
         if (url === null) return null
@@ -41,23 +42,31 @@ const githubAuth = function() {
 }
 
 const getToken = function() {
-    const url = `${BASE_URL}/gh-token`
+    return getCookie("GtaGhAuthToken")
+}
+
+const getRepos = function() {
+    const url = `${BASE_URL}/github/repos`
+
+    const token = getToken();
 
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
+    headers.append("Authorization", `token ${token}`);
 
     return fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: headers
     }).then(res => res.json())
-        .then(jsn => jsn["token"])
+        .then(jsn => jsn.map(e => e.name))
         .catch(err => err)
 }
 
-const getRepos = async function() {
-    const url = `${BASE_URL}/github/repos`
+const getCommits = async function(repo) {
+    // todo get GitLog instead
+    const url = `${BASE_URL}/github/commits/${repo}`
 
-    const token = await getToken();
+    const token = getToken();
 
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
@@ -74,4 +83,5 @@ module.exports = {
     postTextLog: postTextLog,
     githubAuth: githubAuth,
     getRepos: getRepos,
+    getCommits: getCommits
 }
