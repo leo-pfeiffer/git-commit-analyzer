@@ -21,13 +21,18 @@
 
 <script>
 
+import {getRepos, githubAuth} from "@/assets/api";
+
 export default {
   name: 'Home',
   components: {},
   methods: {
     continueWithGithub: function() {
       // call OAuth, if successful, reroute
-      this.$router.push({name: 'ImportGithub'})
+      githubAuth()
+          .then(getRepos)
+          .then((repos) => console.log(repos))
+          .then(() => this.$router.push({name: 'ImportGithub'}))
     },
     continueWithText: function() {
       this.$router.push({name: 'ImportText'})
