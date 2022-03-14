@@ -1,52 +1,81 @@
 package com.github.leopfeiffer.gitcommitanalyzer
 package routes
 
-import requests.post
+import cask.Cookie
+import requests.{get, post}
 import ujson.Value.Value
 
 class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask.Routes {
 
   val ghClientId: String = System.getenv("CLIENT_ID")
   val ghClientSecret: String = System.getenv("CLIENT_SECRET")
-  val ghBaseUri = "https://github.com/login/oauth/access_token"
+  val ghAuthorizeUri = "https://github.com/login/oauth/authorize"
+  val ghAccessTokenUri = "https://github.com/login/oauth/access_token"
+  val ghScope = "scope=user%20repo:status"
   val ghApiBaseUri = "https://api.github.com"
-  val ghRedirectUri = "http://localhost:8080/_oauth-callback"
+  val ghRedirectUri = "http://localhost:9000/_oauth-callback"
 
   // GITHUB AUTH FLOW
   @cask.get("/gh-login")
-  def ghLogin(request: cask.Request): Unit = {
-    val url = s"$ghBaseUri?client_id=$ghClientId&redirect_uri=$ghRedirectUri"
-
+  def ghLogin(request: cask.Request) = {
+    val url = s"$ghAuthorizeUri?client_id=$ghClientId&redirect_uri=$ghRedirectUri&scope=$ghScope"
     cask.Redirect(url)
   }
 
-  @cask.get("/_oauth-callback")
-  def oAuthCallback(code: String): Value = {
+  // todo
+  @cask.get("/gh-logout")
+  def ghLogout(request: cask.Request) = {
 
-    val url = s"$ghBaseUri?client_id=$ghClientId&redirect_uri=$ghRedirectUri&client_secret=$ghClientSecret&code=$code"
+  }
+
+  @cask.get("/_oauth-callback")
+  def oAuthCallback(code: String) = {
+
+    val url = s"$ghAccessTokenUri?client_id=$ghClientId" +
+      s"&redirect_uri=$ghRedirectUri&client_secret=$ghClientSecret&code=$code"
+
     val r = post(url, headers = Map("accept" -> "application/json"))
 
     val obj: Value = ujson.read(r.data.toString)
 
     // todo do sth like this instead: https://stackoverflow.com/a/55063199
     try
-      println(obj("access_token"))
-      obj("access_token")
+      println("Cookie set: " + obj("access_token"))
+      cask.Response(
+        "Cookies Set!",
+        cookies = Seq(cask.Cookie("GtaGhAuthToken", obj("access_token").value.toString))
+      )
     catch
       case e: Exception =>
         println(obj("error"))
-        obj("error")
+        cask.Response("Error :(")
   }
 
-  @cask.get("/github/repos/:org")
-  def githubRepos(org: String): Value = {
+  @cask.get("/gh-token")
+  def ghToken(GtaGhAuthToken: cask.Cookie): Value = {
+    try
+      val token = GtaGhAuthToken.value
+      ujson.Obj("token" -> token)
+    catch
+      case e: Exception =>
+        println("Cookie not found")
+        ujson.Obj("Error" -> "Token not found. Authenticate via /gh-login first.")
+  }
+
+  @cask.get("/github/repos")
+  def githubRepos(request: cask.Request): Value = {
+
+    val token = request.headers.get("authentication")
 
     // todo how to handle multiple pages?
     //  idea: repeat until all fetched: get page, append results
-    val url = s"$ghApiBaseUri/orgs/${org}/repos?type=all&sort=full_name"
-    val r = get(url, headers = Map("accept" -> "application/vnd.github.v3+json"))
+    val url = s"$ghApiBaseUri/user/repos"
+    val r = get(url, headers = Map(
+      "accept" -> "application/vnd.github.v3+json",
+      "authorization" -> s"token $token"
+    ))
 
-    val obj: Value = ujson.read(r.data.toString)
+    ujson.read(r.data.toString)
 
     // todo map only names and return
   }
@@ -58,7 +87,7 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
     val url = s"$ghApiBaseUri/repos/${org}/${repo}/commits?type=all&sort=full_name"
     val r = get(url, headers = Map("accept" -> "application/vnd.github.v3+json"))
 
-    val obj: Value = ujson.read(r.data.toString)
+    ujson.read(r.data.toString)
 
     // todo: convert to Gitlog and return
 
