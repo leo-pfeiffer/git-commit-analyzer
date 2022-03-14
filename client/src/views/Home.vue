@@ -9,7 +9,15 @@
                 <button class="button is-primary" @click="continueWithText">Continue with Text</button>
               </div>
               <div class="column">
-                <button class="button is-dark" @click="continueWithGithub">Continue with GitHub</button>
+
+                <button class="button is-dark" @click="authenticateWithGithub" v-if="!authenticated">
+                  <Loader v-if="oAuthWindowOpen" height="20px" width="20px" thickness="3px" color="#7957d5"/>
+                  <span v-if="!oAuthWindowOpen">Login with GitHub</span>
+                </button>
+
+                <button class="button is-dark" @click="continueWithGithub" v-if="authenticated">
+                  <span v-if="authenticated">Continue</span>
+                </button>
               </div>
             </div>
           </div>
@@ -21,18 +29,36 @@
 
 <script>
 
-import {getRepos, githubAuth} from "@/assets/api";
+import { githubAuth} from "@/assets/api";
+import Loader from "@/components/Loader";
 
 export default {
   name: 'Home',
-  components: {},
+  components: {Loader},
+  data() {
+    return {
+      oAuthWindowOpen: false,
+      authenticated: false
+    }
+  },
   methods: {
+    authenticateWithGithub: function() {
+      const oAuthWindow = githubAuth()
+
+      this.oAuthWindowOpen = true
+
+      let intervalId = setInterval(() => {
+        if (oAuthWindow.closed) {
+
+          // todo should check if actually authenticated!
+          //  create separate route on server to check auth
+          this.authenticated = true
+          clearInterval(intervalId)
+        }
+      }, 500)
+    },
     continueWithGithub: function() {
-      // call OAuth, if successful, reroute
-      githubAuth()
-          .then(getRepos)
-          .then((repos) => console.log(repos))
-          .then(() => this.$router.push({name: 'ImportGithub'}))
+      this.$router.push({name: 'ImportGithub'})
     },
     continueWithText: function() {
       this.$router.push({name: 'ImportText'})

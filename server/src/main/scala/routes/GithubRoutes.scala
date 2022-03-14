@@ -22,6 +22,9 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
     cask.Redirect(url)
   }
 
+  @cask.route("/gh-login", methods = Seq("options"))
+  def corsGhLogin(request: cask.Request) = {"allow_cors"}
+
   // todo
   @cask.get("/gh-logout")
   def ghLogout(request: cask.Request) = {
@@ -81,9 +84,7 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
   }
 
   @cask.route("/github/repos", methods = Seq("options"))
-  def cors(request: cask.Request) = {
-    "allow_cors"
-  }
+  def corsGithubRepos(request: cask.Request) = {"allow_cors"}
 
   @cask.get("/github/commits/:org/:repo")
   def githubCommitsForRepo(org: String, repo: String): Value = {
