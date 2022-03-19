@@ -1,9 +1,14 @@
 package com.github.leopfeiffer.gitcommitanalyzer
 package routes
 
+import gitlog.GitLog
+import parser.JsonParser
+import utils.*
+
 import cask.Cookie
 import requests.{get, post}
 import ujson.Value.Value
+import upickle.default.*
 
 class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask.Routes {
 
@@ -106,7 +111,10 @@ class GithubRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask
     val url = s"$ghApiBaseUri/repos/${owner}/${repo}/commits?type=all&sort=full_name"
     val r = get(url, headers = Map("accept" -> "application/vnd.github.v3+json"))
 
-    ujson.read(r.data.toString)
+    val obj = ujson.read(r.data.toString).arr
+
+    val log: GitLog = JsonParser.main(obj)
+    ujson.read(write(log))
 
     // todo: convert to Gitlog and return
 

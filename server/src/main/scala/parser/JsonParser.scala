@@ -17,23 +17,23 @@ object JsonParser {
 
     val obj: ArrayBuffer[ujson.Value] = log.arr
 
-    // todo find way to elegantly strip trailing " from strings
-    //  potentially, this could be done by typing the ArrayBuffer more accurately
-
     commits.addAll(obj.map(x => {
       Commit(
-        x("sha").toString,
-        x("commit")("author")("name").toString,
-        x("commit")("author")("email").toString,
-        LocalDateTime.parse(x("commit")("author")("date").toString.stripPrefix("\"").stripSuffix("\""), ISO_DATE_TIME),
-        x("commit")("message").toString,
+        toStringTrim(x("sha")),
+        toStringTrim(x("commit")("author")("name")),
+        toStringTrim(x("commit")("author")("email")),
+        LocalDateTime.parse(toStringTrim(x("commit")("author")("date")), ISO_DATE_TIME),
+        toStringTrim(x("commit")("message")),
         "",
         Seq()
       )
     }))
 
     GitLog(commits)
+  }
 
+  def toStringTrim(x: ujson.Value): String = {
+    x.toString.stripPrefix("\"").stripSuffix("\"")
   }
 
 }
