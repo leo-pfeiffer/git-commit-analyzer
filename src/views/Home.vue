@@ -25,11 +25,9 @@
 <script>
 
 import Loader from "@/components/Loader";
-import Pizzly from 'pizzly-js';
 import { mapState } from "vuex";
+import {authenticate} from "@/api/github";
 
-const pizzly = new Pizzly({host: 'https://pizzly-ljp.herokuapp.com', })
-const githubApi = pizzly.integration('github')
 
 export default {
   name: 'Home',
@@ -47,8 +45,7 @@ export default {
   },
   methods: {
     authenticateWithGithub: function() {
-      githubApi
-          .connect()
+      authenticate()
           .then(({ authId }) => {
             this.$store.commit("setAuthId", authId);
             this.authenticated = true;

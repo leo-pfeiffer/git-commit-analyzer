@@ -1,12 +1,10 @@
-import {data} from "@/assets/test-log"
+// import {data} from "@/dashboard/test-log"
+// import {parseLog} from "@/api/github";
 // const {data} = require("./test-log.js")
 
 export default class LogHandler {
     constructor(gitlog) {
         this.data = [...gitlog.log]
-        this.data.forEach((e) => {
-            e["timestamp"] = new Date(e["timestamp"])
-        })
     }
 
     /**
@@ -86,11 +84,11 @@ export default class LogHandler {
     }
 }
 
-const test = function() {
-   const logHandler = new LogHandler(data);
-   console.log(logHandler.aggregateBy(LogHandler.kfDate, LogHandler.afNumCommits))
-   console.log(logHandler.aggregateBy(LogHandler.kfHourOfDay, LogHandler.afNumCommits))
-   console.log(logHandler.aggregateBy(LogHandler.kfDayOfWeek, LogHandler.afNumCommits))
-}
-
-test()
+// const test = function() {
+//    const logHandler = new LogHandler(data);
+//    console.log(logHandler.aggregateBy(LogHandler.kfDate, LogHandler.afNumCommits))
+//    console.log(logHandler.aggregateBy(LogHandler.kfHourOfDay, LogHandler.afNumCommits))
+//    console.log(logHandler.aggregateBy(LogHandler.kfDayOfWeek, LogHandler.afNumCommits))
+// }
+//
+// test()

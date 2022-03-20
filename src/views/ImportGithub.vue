@@ -33,7 +33,7 @@
             </div>
             <div class="card-footer-item" v-bind:class="{'is-disabled': !selectionValid}" @click="routeToDashboard">
               <Loader height="20px" width="20px" thickness="3px" color="#7957d5" v-if="loadingDashboard"/>
-              <span v-if="!loadingDashboard">Go to Dashboard</span>
+              <span v-if="!loadingDashboard" v-bind:class="{'': selectionValid}">Go to Dashboard</span>
             </div>
           </div>
 
@@ -45,13 +45,9 @@
 
 <script>
 import Loader from "@/components/Loader";
-import {getCommits} from "@/assets/api";
-import Pizzly from "pizzly-js";
-import parse from 'parse-link-header';
 import {mapState} from "vuex";
+import {getRepos, getCommits, parseLog} from "@/api/github";
 
-const pizzly = new Pizzly({ host: 'https://pizzly-ljp.herokuapp.com' })
-const githubApi = pizzly.integration('github')
 
 export default {
   name: 'ImportGithub',
@@ -77,8 +73,15 @@ export default {
     if (this.authId === null || this.authId === undefined || this.authId === "") {
       this.backToHome("Please login.")
     }
-    this.repositories = await this.getRepos()
-    this.loadingRepos = false;
+    this.repositories = await getRepos(this.authId)
+        .then((repos) => {
+          this.loadingRepos = false;
+          return repos
+        })
+        .catch(err => {
+          console.error(err);
+          this.backToHome("ERROR!");
+    })
   },
   methods: {
     verifySelection: async function() {
@@ -88,11 +91,18 @@ export default {
             "We couldn't load your repository. Please reload the page and try again."
         this.showWarning = true;
       } else {
-        const commits = await getCommits(this.selectedValue)
-        console.log(commits)
         this.loadingVerify = true;
-        this.setSelectionValidTrue()
-        this.loadingVerify = false;
+        await getCommits(this.authId, this.selectedValue)
+            .then(parseLog)
+            .then((gitlog) => {
+              this.loadingVerify = true;
+              this.setSelectionValidTrue()
+              this.$store.commit("setGitlog", gitlog);
+              this.loadingVerify = false;
+            }).catch(err => {
+              console.error(err);
+              this.loadingVerify = false;
+            })
       }
     },
     setSelectionValidFalse: function()
@@ -108,44 +118,6 @@ export default {
         this.loadingDashboard = true
         this.$router.push({name: 'Dashboard'})
       }
-    },
-    getRepos: async function() {
-      const perPage = 30
-      const lastPage = await githubApi
-          .auth(this.authId)
-          .head('/user/repos', {
-            headers: {"Content-Type": "application/vnd.github.v3+json"},
-            query: {"page": 1, "per_page": perPage}
-          })
-          .then(res => parse(res.headers.get("link")).last.page)
-          .catch(err => {
-            console.error(err);
-            this.$store.commit("setAuthId", "");
-            this.$router.push({name: 'Home'})
-            // todo show error message to user saying what happened
-          })
-
-      const responses = []
-      for (let i = 1; i <= lastPage; i++) {
-        responses.push(this._getRepoPage(i, perPage))
-      }
-
-      return Promise.all(responses).then(values => values.flat()).then(arr => [...new Set(arr)]);
-    },
-    _getRepoPage: function(page, perPage) {
-      return githubApi
-          .auth(this.authId)
-          .get('/user/repos', {
-            headers: {"Content-Type": "application/vnd.github.v3+json"},
-            query: {"page": page, "per_page": perPage, "visibility": "all"}
-          })
-          .then(res => res.json())
-          .then(jsn => jsn.map(e => e.name))
-          .catch(err => {
-            console.error(err);
-            this.backToHome("Error message...")
-            // todo show error message to user saying what happened
-          })
     },
     backToHome(msg) {
       this.$store.commit("setAuthId", "");

@@ -34,7 +34,8 @@
 <script>
 import { Plotly } from 'vue-plotly';
 import { mapState } from "vuex";
-import LogHandler from "@/assets/processing";
+import LogHandler from "@/dashboard/processing";
+import GitLog from "@/gitlog/gitlog";
 
 export default {
   name: 'Dashboard',
@@ -54,8 +55,11 @@ export default {
     ...mapState({
       gitlog: (state) => state.gitlog
     }),
+    gitlogInstance: function() {
+      return GitLog.fromArray(this.gitlog._log)
+    },
     data1: function() {
-      const logHandler = new LogHandler(this.gitlog)
+      const logHandler = new LogHandler(this.gitlogInstance)
       const data = logHandler.aggregateBy(LogHandler.kfHash, LogHandler.afNumAdditions)
       return [{
         x: Object.keys(data),
@@ -64,7 +68,7 @@ export default {
       }]
     },
     data2: function() {
-      const logHandler = new LogHandler(this.gitlog)
+      const logHandler = new LogHandler(this.gitlogInstance)
       const data = logHandler.aggregateBy(LogHandler.kfDate, LogHandler.afNumCommits)
       return [{
         x: Object.keys(data),
@@ -82,6 +86,11 @@ export default {
     layout1: function() {return this.makeLayout("Graph 1")},
     layout2: function() {return this.makeLayout("Graph 2")},
     layout3: function() {return this.makeLayout("Graph 3")},
+  },
+  mounted() {
+    if (this.gitlog === null || this.gitlog === undefined || this.gitlog === {}) {
+      this.backToHome("Gitlog not found!")
+    }
   },
   methods: {
     makeLayout: function(title) {
@@ -101,6 +110,13 @@ export default {
     switchTabs: function(tab) {
       this.deactivateAllTabs();
       this.activateTabsContent(tab);
+    },
+    backToHome(msg) {
+      this.$store.commit("setAuthId", "");
+      this.$store.commit("setGitlog", null);
+      this.$router.push({name: 'Home'})
+      console.log(msg)
+      // todo emit msg
     }
   }
 };
