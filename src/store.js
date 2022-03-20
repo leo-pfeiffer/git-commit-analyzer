@@ -7,10 +7,14 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         gitlog: {},
+        authId: "",
     },
     mutations: {
         setGitlog (state, newGitlog) {
             Object.assign(state.gitlog, newGitlog)
+        },
+        setAuthId (state, newAuthId) {
+            state.authId = newAuthId
         }
     }
 });

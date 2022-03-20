@@ -29,8 +29,12 @@
 
 <script>
 
-import { githubAuth} from "@/assets/api";
 import Loader from "@/components/Loader";
+import Pizzly from 'pizzly-js';
+import { mapState } from "vuex";
+
+const pizzly = new Pizzly({host: 'https://pizzly-ljp.herokuapp.com', })
+const githubApi = pizzly.integration('github')
 
 export default {
   name: 'Home',
@@ -38,24 +42,24 @@ export default {
   data() {
     return {
       oAuthWindowOpen: false,
-      authenticated: false
+      authenticated: false,
     }
+  },
+  computed: {
+    ...mapState({
+      authId: (state) => state.authId
+    }),
   },
   methods: {
     authenticateWithGithub: function() {
-      const oAuthWindow = githubAuth()
-
-      this.oAuthWindowOpen = true
-
-      let intervalId = setInterval(() => {
-        if (oAuthWindow.closed) {
-
-          // todo should check if actually authenticated!
-          //  create separate route on server to check auth
-          this.authenticated = true
-          clearInterval(intervalId)
-        }
-      }, 500)
+      githubApi
+          .connect()
+          .then(({ authId }) => {
+            this.$store.commit("setAuthId", authId);
+            this.authenticated = true;
+            console.log('Successfully connected!', authId)
+          })
+          .catch(console.error)
     },
     continueWithGithub: function() {
       this.$router.push({name: 'ImportGithub'})

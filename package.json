@@ -11,6 +11,8 @@
     "buefy": "^0.9.19",
     "core-js": "^3.6.5",
     "es6-promise": "^4.2.8",
+    "parse-link-header": "^2.0.0",
+    "pizzly-js": "^0.2.8",
     "vue": "^2.6.11",
     "vue-plotly": "^1.1.0",
     "vue-router": "^3.2.0",
