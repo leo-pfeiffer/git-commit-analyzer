@@ -9,14 +9,9 @@
                 <button class="button is-primary" @click="continueWithText">Continue with Text</button>
               </div>
               <div class="column">
-
                 <button class="button is-dark" @click="authenticateWithGithub" v-if="!authenticated">
                   <Loader v-if="oAuthWindowOpen" height="20px" width="20px" thickness="3px" color="#7957d5"/>
                   <span v-if="!oAuthWindowOpen">Login with GitHub</span>
-                </button>
-
-                <button class="button is-dark" @click="continueWithGithub" v-if="authenticated">
-                  <span v-if="authenticated">Continue</span>
                 </button>
               </div>
             </div>
@@ -58,11 +53,9 @@ export default {
             this.$store.commit("setAuthId", authId);
             this.authenticated = true;
             console.log('Successfully connected!', authId)
+            this.$router.push({name: 'ImportGithub'})
           })
           .catch(console.error)
-    },
-    continueWithGithub: function() {
-      this.$router.push({name: 'ImportGithub'})
     },
     continueWithText: function() {
       this.$router.push({name: 'ImportText'})
