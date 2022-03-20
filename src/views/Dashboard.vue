@@ -1,6 +1,7 @@
 <template>
-  <div class="home v-scroll">
-    <section>
+  <div class="home v-scroll columns is-mobile">
+    <GraphController id="control-bar" :axis-opts="['opt1', 'opt2', 'opt3']" :agg-opts="['aggr1', 'aggr2', 'aggr3']"/>
+    <section id="dashboard-section">
       <div id="tabs-with-content" class="container">
         <div class="tabs is-centered">
           <ul>
@@ -17,13 +18,13 @@
         </div>
         <div>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['graph1']}">
-              <Plotly :data="data1" :layout="layout1" :display-mode-bar="false"></Plotly>
+<!--              <Plotly :data="data1" :layout="layout1" :display-mode-bar="false"></Plotly>-->
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['graph2']}">
-            <Plotly :data="data2" :layout="layout2" :display-mode-bar="false"></Plotly>
+<!--            <Plotly :data="data2" :layout="layout2" :display-mode-bar="false"></Plotly>-->
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['graph3']}">
-            <Plotly :data="data3" :layout="layout3" :display-mode-bar="false"></Plotly>
+<!--            <Plotly :data="data3" :layout="layout3" :display-mode-bar="false"></Plotly>-->
           </section>
         </div>
       </div>
@@ -32,15 +33,17 @@
 </template>
 
 <script>
-import { Plotly } from 'vue-plotly';
+// import { Plotly } from 'vue-plotly';
 import { mapState } from "vuex";
 import LogHandler from "@/dashboard/processing";
 import GitLog from "@/gitlog/gitlog";
+import GraphController from "@/components/GraphController";
 
 export default {
   name: 'Dashboard',
   components: {
-    Plotly
+    // Plotly,
+    GraphController
   },
   data() {
     return {
@@ -89,7 +92,7 @@ export default {
   },
   mounted() {
     if (this.gitlog === null || this.gitlog === undefined || this.gitlog === {}) {
-      this.backToHome("Gitlog not found!")
+      // this.backToHome("Gitlog not found!")
     }
   },
   methods: {
@@ -135,6 +138,18 @@ export default {
 
 #tabs-with-content .tab-content.is-active {
   display: block;
+}
+
+#control-bar {
+  height: 100%;
+  width: 250px;
+  min-width: 250px;
+}
+
+#dashboard-section {
+  width: 100%;
+  min-height: 400px;
+  min-width: 500px;
 }
 </style>
 

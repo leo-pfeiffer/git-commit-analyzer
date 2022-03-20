@@ -9,7 +9,7 @@
                   <button class="panel-heading button is-primary" @click="continueWithText">
                     <span>Upload</span><span class="is-family-code">&nbsp;git log</span>
                   </button>
-                <p class="panel-block" v-for="item of features" :key="item.text">
+                <p class="panel-block" v-for="item of features" :key="item.name">
                   <span class="panel-icon">
                     <font-awesome-icon icon="check" v-if="item.text"/>
                     <font-awesome-icon icon="xmark" v-else/>
@@ -23,7 +23,7 @@
                   <Loader v-if="oAuthWindowOpen" height="20px" width="20px" thickness="3px" color="#7957d5"/>
                   <span v-if="!oAuthWindowOpen">Import from GitHub</span>
                 </button>
-                <p class="panel-block" v-for="item of features" :key="item.text">
+                <p class="panel-block" v-for="item of features" :key="item.name">
                   <span class="panel-icon">
                     <font-awesome-icon icon="check" v-if="item.github"/>
                     <font-awesome-icon icon="xmark" v-else/>
