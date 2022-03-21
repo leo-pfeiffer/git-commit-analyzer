@@ -25,6 +25,18 @@ export default class LogHandler {
     }
 
     // KEY FUNCTIONS ==============
+    static keyMap = {
+        Commit: LogHandler.kfHash,
+        AuthorName: LogHandler.kfAuthorName,
+        AuthorMail: LogHandler.kfAuthorMail,
+        Date: LogHandler.kfDate,
+        WeekDay: LogHandler.kfWeekDay,
+        DayOfMonth: LogHandler.kfDayOfMonth,
+        Year: LogHandler.kfYear,
+        Month: LogHandler.kfMonth,
+        Hour: LogHandler.kfHourOfDay,
+    }
+
     static kfHash(obj) {
         return obj.hash
     }
@@ -39,12 +51,12 @@ export default class LogHandler {
 
     static kfDate(obj) {
         const year = LogHandler.kfYear(obj)
-        const month = LogHandler.kfMonthOfYear(obj)
+        const month = LogHandler.kfMonth(obj)
         const date = LogHandler.kfDayOfMonth(obj)
         return new Date(year, month, date)
     }
 
-    static kfDayOfWeek(obj) {
+    static kfWeekDay(obj) {
         return obj.timestamp.getDay()
     }
 
@@ -56,7 +68,7 @@ export default class LogHandler {
         return obj.timestamp.getFullYear()
     }
 
-    static kfMonthOfYear(obj) {
+    static kfMonth(obj) {
         return obj.timestamp.getMonth()
     }
 
@@ -64,16 +76,22 @@ export default class LogHandler {
         return obj.timestamp.getHours()
     }
 
-    // AGGREGATOR FUNCTIONS ==============
-    static afNumCommits(array) {
+    // VALUE FUNCTIONS ==============
+    static valMap = {
+        NumCommits: LogHandler.vfNumCommits,
+        Additions: LogHandler.vfNumAdditions,
+        Deletions: LogHandler.vfNumDeletions,
+    }
+
+    static vfNumCommits(array) {
         return array.length
     }
 
-    static afNumAdditions(array) {
+    static vfNumAdditions(array) {
         return LogHandler._numChanges(array, "additions")
     }
 
-    static afNumDeletions(array) {
+    static vfNumDeletions(array) {
         return LogHandler._numChanges(array, "deletions")
     }
 
@@ -84,11 +102,3 @@ export default class LogHandler {
     }
 }
 
-// const test = function() {
-//    const logHandler = new LogHandler(data);
-//    console.log(logHandler.aggregateBy(LogHandler.kfDate, LogHandler.afNumCommits))
-//    console.log(logHandler.aggregateBy(LogHandler.kfHourOfDay, LogHandler.afNumCommits))
-//    console.log(logHandler.aggregateBy(LogHandler.kfDayOfWeek, LogHandler.afNumCommits))
-// }
-//
-// test()

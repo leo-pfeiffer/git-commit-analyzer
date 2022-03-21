@@ -2,31 +2,29 @@
   <aside class="menu" id="graph-controller">
 
     <div class="box">
-      <p class="menu-label">Axis Options</p>
-      <draggable v-model="axisOptions" group="axisoptions" @start="drag=true" @end="drag=false">
-        <span class="tag is-draggable" v-for="element in axisOptions" :key="element.id">{{element.name}}</span>
+      <draggable v-model="keyOptions" group="key-options" @start="drag=true" @end="drag=false">
+        <span class="tag is-draggable" v-for="element in keyOptions" :key="element.id">{{element.name}}</span>
       </draggable>
       <hr>
-      <p class="menu-label">x-axis</p>
-      <draggable v-model="xAxis" group="axisoptions" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.xAxis, this.axisOptions)">
-        <span class="tag is-draggable" v-for="element in xAxis" :key="element.id">{{element.name}}</span>
+      <p class="menu-label">Key</p>
+      <draggable v-model="key" group="key-options" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.key, this.keyOptions)">
+        <span class="tag is-draggable" v-for="element in key" :key="element.id">{{element.name}}</span>
       </draggable>
       <hr>
-      <p class="menu-label">y-axis</p>
-      <draggable v-model="yAxis" group="axisoptions" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.yAxis, this.axisOptions)">
-        <span class="tag is-draggable" v-for="element in yAxis" :key="element.id">{{element.name}}</span>
+      <p class="menu-label">[Color]</p>
+      <draggable v-model="color" group="key-options" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.color, this.keyOptions)">
+        <span class="tag is-draggable" v-for="element in color" :key="element.id">{{element.name}}</span>
       </draggable>
     </div>
 
     <div class="box">
-      <p class="menu-label">Aggregator Options</p>
-      <draggable v-model="aggregatorOptions" group="aggoptions" @start="drag=true" @end="drag=false">
-        <span class="tag is-draggable" v-for="element in aggregatorOptions" :key="element.id">{{element.name}}</span>
+      <draggable v-model="valueOptions" group="value-opts" @start="drag=true" @end="drag=false">
+        <span class="tag is-draggable" v-for="element in valueOptions" :key="element.id">{{element.name}}</span>
       </draggable>
       <hr>
-      <p class="menu-label">aggregator</p>
-      <draggable v-model="aggregator" group="aggoptions" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.aggregator, this.aggregatorOptions)">
-        <span class="tag is-draggable" v-for="element in aggregator" :key="element.id">{{element.name}}</span>
+      <p class="menu-label">Value</p>
+      <draggable v-model="value" group="value-opts" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.value, this.valueOptions)">
+        <span class="tag is-draggable" v-for="element in value" :key="element.id">{{element.name}}</span>
       </draggable>
     </div>
 
@@ -42,21 +40,21 @@ export default {
     draggable,
   },
   props: {
-    axisOpts: Array,
-    aggOpts: Array
+    keyOpts: Array,
+    valueOpts: Array
   },
   data() {
     return  {
-      axisOptions: [],
-      aggregatorOptions: [],
-      xAxis: [],
-      yAxis: [],
-      aggregator: []
+      keyOptions: [],
+      valueOptions: [],
+      key: [],
+      color: [],
+      value: []
     }
   },
   mounted() {
-    this.axisOptions = this.axisOpts.map((v, i) => {return {id: i, name: v}})
-    this.aggregatorOptions = this.aggOpts.map((v, i) => {return {id: i, name: v}})
+    this.keyOptions = this.keyOpts.map((v, i) => {return {id: i, name: v}})
+    this.valueOptions = this.valueOpts.map((v, i) => {return {id: i, name: v}})
   },
   methods: {
     groupChange: function(event, array, optionsArray) {
@@ -75,14 +73,13 @@ export default {
       }
     },
     submit: function() {
-      if (this.xAxis.length == 1 && this.yAxis.length === 1) {
+      if (this.key.length === 1 && this.value.length === 1) {
         const selection = {
-          x: this.xAxis[0],
-          y: this.yAxis[0],
-          z: (this.aggregator.length !== 1) ? null : this.aggregator[0]
+          key: this.key[0],
+          value: this.value[0],
+          color: (this.color.length !== 1) ? null : this.color[0]
         }
-        console.log(selection)
-        // todo emit...
+        this.$emit("optionChange", selection)
       }
     }
   }
