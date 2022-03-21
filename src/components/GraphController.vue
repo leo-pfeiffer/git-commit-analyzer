@@ -10,11 +10,12 @@
       <draggable v-model="key" group="key-options" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.key, this.keyOptions)">
         <span class="tag is-draggable" v-for="element in key" :key="element.id">{{element.name}}</span>
       </draggable>
-      <hr>
-      <p class="menu-label">[Color]</p>
-      <draggable v-model="color" group="key-options" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.color, this.keyOptions)">
-        <span class="tag is-draggable" v-for="element in color" :key="element.id">{{element.name}}</span>
-      </draggable>
+<!--      TODO -->
+<!--      <hr>-->
+<!--      <p class="menu-label">[Color]</p>-->
+<!--      <draggable v-model="color" group="key-options" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.color, this.keyOptions)">-->
+<!--        <span class="tag is-draggable" v-for="element in color" :key="element.id">{{element.name}}</span>-->
+<!--      </draggable>-->
     </div>
 
     <div class="box">
@@ -79,6 +80,7 @@ export default {
           value: this.value[0],
           color: (this.color.length !== 1) ? null : this.color[0]
         }
+        console.log(selection)
         this.$emit("optionChange", selection)
       }
     }

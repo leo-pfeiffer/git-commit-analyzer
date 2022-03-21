@@ -9,26 +9,26 @@
       <div id="tabs-with-content" class="container">
         <div class="tabs is-centered">
           <ul>
-            <li><a @click="() => switchTabs('graph1')" v-bind:class="{'is-active': activeTabs['graph1']}">
-              Graph 1
+            <li><a @click="() => switchTabs('barChart')" v-bind:class="{'is-active': activeTabs['barChart']}">
+              Bar chart
             </a></li>
-            <li><a @click="() => switchTabs('graph2')" v-bind:class="{'is-active': activeTabs['graph2']}">
-              Graph 2
+            <li><a @click="() => switchTabs('pieChart')" v-bind:class="{'is-active': activeTabs['pieChart']}">
+              Pie chart
             </a></li>
-            <li><a @click="() => switchTabs('graph3')" v-bind:class="{'is-active': activeTabs['graph3']}">
-              Graph 3
+            <li><a @click="() => switchTabs('scatterChart')" v-bind:class="{'is-active': activeTabs['scatterChart']}">
+              Scatter chart
             </a></li>
           </ul>
         </div>
         <div>
-          <section class="tab-content" v-bind:class="{'is-active': activeTabs['graph1']}">
-              <Plotly v-if="selected" :data="data1" :layout="layout1" :display-mode-bar="false"></Plotly>
+          <section class="tab-content" v-bind:class="{'is-active': activeTabs['barChart']}">
+              <Plotly v-if="selected" :data="data1" :layout="barChartLayout" :display-mode-bar="false"></Plotly>
           </section>
-          <section class="tab-content" v-bind:class="{'is-active': activeTabs['graph2']}">
-            <Plotly v-if="selected" :data="data2" :layout="layout2" :display-mode-bar="false"></Plotly>
+          <section class="tab-content" v-bind:class="{'is-active': activeTabs['pieChart']}">
+            <Plotly v-if="selected" :data="data2" :layout="pieChartLayout" :display-mode-bar="false"></Plotly>
           </section>
-          <section class="tab-content" v-bind:class="{'is-active': activeTabs['graph3']}">
-            <Plotly v-if="selected" :data="data3" :layout="layout3" :display-mode-bar="false"></Plotly>
+          <section class="tab-content" v-bind:class="{'is-active': activeTabs['scatterChart']}">
+            <Plotly v-if="selected" :data="data3" :layout="scatterChartLayout" :display-mode-bar="false"></Plotly>
           </section>
         </div>
       </div>
@@ -52,9 +52,9 @@ export default {
   data() {
     return {
       activeTabs: {
-        graph1: true,
-        graph2: false,
-        graph3: false,
+        barChart: true,
+        pieChart: false,
+        scatterChart: false,
       },
       selectedOpts: {},
       selected: false
@@ -80,7 +80,7 @@ export default {
       const data = logHandler.aggregateBy(keyFunc, valFunc)
       return [{
         x: Object.keys(data),
-        y: Object.keys(data).map(e => data[e]),
+        y: Object.keys(data).map(e => data[e]).map(e => e.value),
         type: "bar"
       }]
     },
@@ -91,7 +91,7 @@ export default {
       const data = logHandler.aggregateBy(keyFunc, valFunc)
       return [{
         labels: Object.keys(data),
-        values: Object.keys(data).map(e => data[e]),
+        values: Object.keys(data).map(e => data[e]).map(e => e.value),
         type: "pie"
       }]
     },
@@ -99,16 +99,22 @@ export default {
       const logHandler = new LogHandler(this.gitlogInstance)
       const keyFunc = LogHandler.keyMap[this.selectedOpts.key.name]
       const valFunc = LogHandler.valMap[this.selectedOpts.value.name]
-      const data = logHandler.aggregateBy(keyFunc, valFunc)
+      const groupFunc = this.selectedOpts.color === null ? null : LogHandler.valMap[this.selectedOpts.color.name]
+      const data = logHandler.aggregateBy(keyFunc, valFunc, groupFunc)
       return [{
         x: Object.keys(data),
-        y: Object.keys(data).map(e => data[e]),
-        type: "scatter"
+        y: Object.keys(data).map(e => data[e]).map(e => e.value),
+        type: "scatter",
+        mode: 'markers',
+        // transforms: [{
+        //   type: 'groupby',
+        //   groups: Object.keys(data).map(e => data[e]).map(e => e.group)
+        // }]
       }]
     },
-    layout1: function() {return this.makeLayout("Graph 1")},
-    layout2: function() {return this.makeLayout("Graph 2")},
-    layout3: function() {return this.makeLayout("Graph 3")},
+    barChartLayout: function() {return this.makeLayout("Bar Chart")},
+    pieChartLayout: function() {return this.makeLayout("Pie Chart")},
+    scatterChartLayout: function() {return this.makeLayout("Scatter Chart")},
   },
   mounted() {
     if (this.gitlog === null || this.gitlog === undefined || this.gitlog === {}) {

@@ -10,16 +10,20 @@ export default class LogHandler {
     /**
      * Aggregator for top level keys of the Gitlog object.
      * @param keyFunc: function to get the key per commit
-     * @param aggFunc: function to aggregate by
+     * @param valueFunc: function to aggregate by
      * */
-    aggregateBy (keyFunc, aggFunc) {
+    aggregateBy (keyFunc, valueFunc, groupFunc) {
+        const noGroup = (groupFunc === undefined || groupFunc === null)
         const grouped = this.data.reduce((agg, next) => {
             const curKeyValue = keyFunc(next)
             curKeyValue in agg ? agg[curKeyValue].push(next) : agg[curKeyValue] = [next]
             return agg
         }, {})
         Object.keys(grouped).forEach((k) => {
-            grouped[k] = aggFunc(grouped[k])
+            grouped[k] = {
+                value: valueFunc(grouped[k]),
+                group: noGroup ? null : groupFunc(grouped[k])
+            }
         })
         return grouped
     }
