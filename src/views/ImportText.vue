@@ -46,7 +46,7 @@
 import CopySpan from "@/components/CopySpan";
 import Loader from "@/components/Loader";
 import { mapState } from "vuex";
-import {postTextLog} from "@/assets/api";
+import TxtParser from "@/gitlog/txt-parser";
 export default {
   name: 'ImportText',
   components: {CopySpan, Loader},
@@ -66,26 +66,26 @@ export default {
     })
   },
   methods: {
-    verifyInput: async function() {
+    verifyInput: function() {
       if (this.inputValid === "") {
         this.warningMsg = "Please paste your git log first."
         this.showWarning = true;
-        return
-      }
-
-      this.loadingVerify = true;
-      const gitlog = await postTextLog(this.inputText);
-      this.loadingVerify = false;
-      console.log(gitlog)
-
-      if (this.inputText === "error" || gitlog === undefined || gitlog === null) {
-        this.warningMsg = "" +
-            "We couldn't parse your input. Please check if you pasted the git log correctly and " +
-            "without modification."
-        this.showWarning = true;
       } else {
-        this.setInputValidTrue()
-        this.$store.commit("setGitlog", gitlog);
+        this.loadingVerify = true;
+        try {
+          const gitlog = TxtParser.parse(this.inputText);
+          console.log(gitlog)
+          this.setInputValidTrue()
+          this.$store.commit("setGitlog", gitlog);
+        } catch (e) {
+          console.error(e)
+          this.warningMsg = "" +
+              "We couldn't parse your input. Please check if you pasted the git log correctly and " +
+              "without modification."
+          this.showWarning = true;
+        } finally {
+          this.loadingVerify = false;
+        }
       }
     },
     setInputValidFalse: function()

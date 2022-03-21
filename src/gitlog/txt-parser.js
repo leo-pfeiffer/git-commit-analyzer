@@ -14,7 +14,7 @@ export default class TxtParser {
                 TxtParser.matchAuthorName(split),
                 TxtParser.matchAuthorMail(split),
                 new Date(TxtParser.matchTimestamp(split)),
-                TxtParser.matchHeader(split) + TxtParser.matchBody(split),
+                TxtParser.matchMessage(split),
                 TxtParser.makeNodes(split)
             ))
         }
@@ -28,23 +28,39 @@ export default class TxtParser {
     }
 
     static matchHash(string) {
-        return TxtParser.matchPattern(string, /([A-Fa-f0-9]{40})/g)
+        const match = TxtParser.matchPattern(string, /([A-Fa-f0-9]{40})/g)
+        if (match == null) TxtParser.parseError("hash")
+        return match
     }
 
     static matchAuthorName(string) {
-        return TxtParser.matchPattern(string, /(?<=Author:\s)[\S].*(?=\s<)/g)
+        const match = TxtParser.matchPattern(string, /(?<=Author:\s)[\S].*(?=\s<)/g)
+        if (match == null) TxtParser.parseError("author name")
+        return match
     }
 
     static matchAuthorMail(string) {
-        return TxtParser.matchPattern(string, /(?<=Author:\s.*<)[\S].*(?=>)/g)
+        const match = TxtParser.matchPattern(string, /(?<=Author:\s.*<)[\S].*(?=>)/g)
+        if (match == null) TxtParser.parseError("author mail")
+        return match
     }
 
     static matchTimestamp(string) {
-        return TxtParser.matchPattern(string, /(?<=Date:\s+)[\d{4}][\S].*/g)
+        const match = TxtParser.matchPattern(string, /(?<=Date:\s+)[\d{4}][\S].*/g)
+        if (match == null) TxtParser.parseError("timestamp")
+        return match
+    }
+
+    static matchMessage(string) {
+        const header = TxtParser.matchHeader(string)
+        const body = TxtParser.matchBody(string)
+        return body === "" ? header : header + '\n\n' + body
     }
 
     static matchHeader(string) {
-        return TxtParser.matchPattern(string, /(?<=\n\s{4})[\S].*/g)
+        const match = TxtParser.matchPattern(string, /(?<=\n\s{4})[\S].*/g)
+        if (match == null) TxtParser.parseError("header")
+        return match
     }
 
     static matchBody(string) {
@@ -52,8 +68,10 @@ export default class TxtParser {
         let array;
         const pattern = /(?<=\n\s{4})([\S].*)/g;
 
+        let take = false
         while ((array = pattern.exec(string)) !== null) {
-            match.push(array[0])
+            if (take) match.push(array[0])
+            take = true;
         }
 
         return match.join("\n\n")
@@ -75,6 +93,7 @@ export default class TxtParser {
         const add = TxtParser.matchNodeAddition(rawNode)
         const del = TxtParser.matchNodeDeletion(rawNode)
         const txt = TxtParser.matchNodeText(rawNode)
+        if (add === null || del === null || txt === null) TxtParser.parseError("node")
         return new Node(add, del, txt)
     }
 
@@ -107,6 +126,9 @@ export default class TxtParser {
         } else {
             return null
         }
+    }
+    static parseError(name) {
+        throw new Error(`Error parsing ${name}`)
     }
 }
 
