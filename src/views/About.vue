@@ -1,5 +1,17 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <error/>
   </div>
 </template>
+<script>
+import Error from "@/components/Error";
+export default {
+  components: {Error}
+}
+</script>
+
+<style>
+.about {
+  height: 90vh;
+}
+</style>
