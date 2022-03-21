@@ -12,8 +12,7 @@ export default class LogHandler {
      * @param keyFunc: function to get the key per commit
      * @param valueFunc: function to aggregate by
      * */
-    aggregateBy (keyFunc, valueFunc, groupFunc) {
-        const noGroup = (groupFunc === undefined || groupFunc === null)
+    aggregateBy (keyFunc, valueFunc) {
         const grouped = this.data.reduce((agg, next) => {
             const curKeyValue = keyFunc(next)
             curKeyValue in agg ? agg[curKeyValue].push(next) : agg[curKeyValue] = [next]
@@ -22,7 +21,23 @@ export default class LogHandler {
         Object.keys(grouped).forEach((k) => {
             grouped[k] = {
                 value: valueFunc(grouped[k]),
-                group: noGroup ? null : groupFunc(grouped[k])
+            }
+        })
+        return grouped
+    }
+
+    groupAggregateBy(groupFunc, keyFunc, valueFunc) {
+        const grouped = this.data.reduce((agg, next) => {
+            const curKey = [keyFunc(next), groupFunc(next)]
+
+            curKey in agg ? agg[curKey].push(next) : agg[curKey] = [next]
+            return agg
+        }, {})
+        Object.keys(grouped).forEach((k) => {
+            grouped[k] = {
+                key: keyFunc(grouped[k][0]),
+                group: groupFunc(grouped[k][0]),
+                value: valueFunc(grouped[k])
             }
         })
         return grouped

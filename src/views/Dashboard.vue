@@ -89,43 +89,45 @@ export default {
       return GitLog.fromArray(this.gitlog._log)
     },
     data1: function() {
-      const logHandler = new LogHandler(this.gitlogInstance)
-      const keyFunc = LogHandler.keyMap[this.selectedOpts.key.name]
-      const valFunc = LogHandler.valMap[this.selectedOpts.value.name]
-      const data = logHandler.aggregateBy(keyFunc, valFunc)
-      return [{
-        x: Object.keys(data),
-        y: Object.keys(data).map(e => data[e]).map(e => e.value),
+      const data = this.getData()
+
+      const r = {
+        x: data.x,
+        y: data.y,
         type: "bar"
-      }]
+      }
+
+      if (data.z !== null) {
+        r['transforms'] = [{type: 'groupby', groups: data.x}]
+        return [r]
+      } else {
+        return [r]
+      }
     },
     data2: function() {
-      const logHandler = new LogHandler(this.gitlogInstance)
-      const keyFunc = LogHandler.keyMap[this.selectedOpts.key.name]
-      const valFunc = LogHandler.valMap[this.selectedOpts.value.name]
-      const data = logHandler.aggregateBy(keyFunc, valFunc)
+      const data = this.getData()
       return [{
-        labels: Object.keys(data),
-        values: Object.keys(data).map(e => data[e]).map(e => e.value),
+        labels: data.x,
+        values: data.y,
         type: "pie"
       }]
     },
     data3: function() {
-      const logHandler = new LogHandler(this.gitlogInstance)
-      const keyFunc = LogHandler.keyMap[this.selectedOpts.key.name]
-      const valFunc = LogHandler.valMap[this.selectedOpts.value.name]
-      const groupFunc = this.selectedOpts.color === null ? null : LogHandler.valMap[this.selectedOpts.color.name]
-      const data = logHandler.aggregateBy(keyFunc, valFunc, groupFunc)
-      return [{
-        x: Object.keys(data),
-        y: Object.keys(data).map(e => data[e]).map(e => e.value),
+      const data = this.getData()
+
+      const r = {
+        x: data.x,
+        y: data.y,
         type: "scatter",
-        mode: 'markers',
-        // transforms: [{
-        //   type: 'groupby',
-        //   groups: Object.keys(data).map(e => data[e]).map(e => e.group)
-        // }]
-      }]
+        mode: "markers"
+      }
+
+      if (data.z !== null) {
+        r['transforms'] = [{type: 'groupby', groups: data.x}]
+        return [r]
+      } else {
+        return [r]
+      }
     },
     layout: function() {
       return this.makeLayout()
@@ -133,7 +135,7 @@ export default {
   },
   mounted() {
     if (this.gitlog === null || this.gitlog === undefined || this.gitlog === {}) {
-      // this.backToHome("Gitlog not found!")
+      this.backToHome("Gitlog not found!")
     }
   },
   methods: {
@@ -142,7 +144,7 @@ export default {
       const y = this.selectedValueFunc
       return {
         title: `${y} per ${x}`,
-        margin: {b: 20, l: 50, r: 50, t: 50},
+        margin: {b: 50, l: 50, r: 50, t: 50},
         xaxis: {title: {text: x}},
         yaxis: {title: {text: y}},
       }
@@ -170,6 +172,30 @@ export default {
     updateOptions(options) {
       this.selectedOpts = options
       this.selected = true;
+    },
+    getData: function() {
+      const logHandler = new LogHandler(this.gitlogInstance)
+      const keyFunc = LogHandler.keyMap[this.selectedOpts.key.name]
+      const valFunc = LogHandler.valMap[this.selectedOpts.value.name]
+
+      if (this.selectedOpts.color === null) {
+        const data = logHandler.aggregateBy(keyFunc, valFunc)
+        return {
+          x: Object.keys(data),
+          y: Object.keys(data).map(e => data[e]).map(e => e.value),
+          z: null
+        }
+      } else {
+        const groupFunc = LogHandler.keyMap[this.selectedOpts.color.name]
+        const data = logHandler.groupAggregateBy(groupFunc, keyFunc, valFunc)
+        console.log(data)
+        return  {
+          x: Object.keys(data).map(e => data[e]).map(e => e.key),
+          y: Object.keys(data).map(e => data[e]).map(e => e.value),
+          z: Object.keys(data).map(e => data[e]).map(e => e.group),
+        }
+      }
+
     }
   }
 };
