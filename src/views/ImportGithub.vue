@@ -85,7 +85,6 @@ export default {
   },
   methods: {
     verifySelection: async function() {
-      // todo do verification
       if (this.selectedValue === "error") {
         this.warningMsg = "" +
             "We couldn't load your repository. Please reload the page and try again."
