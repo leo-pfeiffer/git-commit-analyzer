@@ -8,6 +8,7 @@ export default new Vuex.Store({
     state: {
         gitlog: {},
         authId: "",
+        logType: ""
     },
     mutations: {
         setGitlog (state, newGitlog) {
@@ -15,6 +16,15 @@ export default new Vuex.Store({
         },
         setAuthId (state, newAuthId) {
             state.authId = newAuthId
+        },
+        setLogTypeText (state) {
+            state.logType = "TEXT"
+        },
+        setLogTypeGithub(state) {
+            state.logType = "GITHUB"
+        },
+        setLogTypeNull (state) {
+            state.logType = ""
         }
     }
 });

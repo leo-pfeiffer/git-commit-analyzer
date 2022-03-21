@@ -77,6 +77,7 @@ export default {
           console.log(gitlog)
           this.setInputValidTrue()
           this.$store.commit("setGitlog", gitlog);
+          this.$store.commit("setLogTypeText");
         } catch (e) {
           console.error(e)
           this.warningMsg = "" +

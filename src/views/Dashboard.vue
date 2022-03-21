@@ -22,13 +22,13 @@
         </div>
         <div>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['barChart']}">
-              <Plotly v-if="selected" :data="data1" :layout="barChartLayout" :display-mode-bar="false"></Plotly>
+              <Plotly v-if="selected" :data="data1" :layout="layout" :display-mode-bar="false"></Plotly>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['pieChart']}">
-            <Plotly v-if="selected" :data="data2" :layout="pieChartLayout" :display-mode-bar="false"></Plotly>
+            <Plotly v-if="selected" :data="data2" :layout="layout" :display-mode-bar="false"></Plotly>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['scatterChart']}">
-            <Plotly v-if="selected" :data="data3" :layout="scatterChartLayout" :display-mode-bar="false"></Plotly>
+            <Plotly v-if="selected" :data="data3" :layout="layout" :display-mode-bar="false"></Plotly>
           </section>
         </div>
       </div>
@@ -62,13 +62,28 @@ export default {
   },
   computed: {
     ...mapState({
-      gitlog: (state) => state.gitlog
+      gitlog: (state) => state.gitlog,
+      logType: (state) => state.logType,
     }),
     availableKeys: function() {
       return Object.keys(LogHandler.keyMap)
     },
     availableValues: function() {
-      return Object.keys(LogHandler.valMap)
+      if (this.logType === "TEXT") {
+        return Object.keys(LogHandler.valMap)
+      } else {
+        // todo this is nasty
+        return Object.keys(LogHandler.valMap).filter(e => (e !== 'Additions' && e !== 'Deletions'))
+      }
+    },
+    selectedKeyFunc: function() {
+      return this.selectedOpts.key.name
+    },
+    selectedValueFunc: function() {
+      return this.selectedOpts.value.name
+    },
+    selectedGroupFunc: function() {
+      return this.selectedOpts.color.name
     },
     gitlogInstance: function() {
       return GitLog.fromArray(this.gitlog._log)
@@ -112,9 +127,9 @@ export default {
         // }]
       }]
     },
-    barChartLayout: function() {return this.makeLayout("Bar Chart")},
-    pieChartLayout: function() {return this.makeLayout("Pie Chart")},
-    scatterChartLayout: function() {return this.makeLayout("Scatter Chart")},
+    layout: function() {
+      return this.makeLayout()
+    },
   },
   mounted() {
     if (this.gitlog === null || this.gitlog === undefined || this.gitlog === {}) {
@@ -122,10 +137,14 @@ export default {
     }
   },
   methods: {
-    makeLayout: function(title) {
+    makeLayout: function() {
+      const x = this.selectedKeyFunc
+      const y = this.selectedValueFunc
       return {
-        title: title,
-        margin: {b: 20, l: 50, r: 50, t: 50}
+        title: `${y} per ${x}`,
+        margin: {b: 20, l: 50, r: 50, t: 50},
+        xaxis: {title: {text: x}},
+        yaxis: {title: {text: y}},
       }
     },
     deactivateAllTabs: function () {
@@ -143,6 +162,7 @@ export default {
     backToHome(msg) {
       this.$store.commit("setAuthId", "");
       this.$store.commit("setGitlog", null);
+      this.$store.commit("setLogTypeNull")
       this.$router.push({name: 'Home'})
       console.log(msg)
       // todo emit msg

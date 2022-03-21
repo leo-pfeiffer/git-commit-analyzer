@@ -97,6 +97,7 @@ export default {
               this.loadingVerify = true;
               this.setSelectionValidTrue()
               this.$store.commit("setGitlog", gitlog);
+              this.$store.commit("setLogTypeGithub");
               this.loadingVerify = false;
             }).catch(err => {
               console.error(err);
