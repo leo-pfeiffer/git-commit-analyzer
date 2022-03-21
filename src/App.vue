@@ -3,6 +3,7 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
+      <a href="https://github.com/leo-pfeiffer/git-commit-analyzer/issues/new/choose" target="_blank">Report bug</a> |
       <router-link to="/about">About</router-link>
     </div>
     <router-view/>
