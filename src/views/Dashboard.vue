@@ -98,7 +98,7 @@ export default {
       }
 
       if (data.z !== null) {
-        r['transforms'] = [{type: 'groupby', groups: data.x}]
+        r['transforms'] = [{type: 'groupby', groups: data.z}]
         return [r]
       } else {
         return [r]
@@ -123,7 +123,7 @@ export default {
       }
 
       if (data.z !== null) {
-        r['transforms'] = [{type: 'groupby', groups: data.x}]
+        r['transforms'] = [{type: 'groupby', groups: data.z}]
         return [r]
       } else {
         return [r]
