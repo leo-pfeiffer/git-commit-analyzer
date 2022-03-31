@@ -3,7 +3,10 @@ import Pizzly from "pizzly-js";
 import parse from "parse-link-header";
 import GitLog from "@/gitlog/gitlog";
 
-const pizzly = new Pizzly({host: 'https://pizzly-ljp.herokuapp.com', })
+const HOST = process.env.VUE_APP_PIZZLY_HOST
+const SECRET = process.env.VUE_APP_PIZZLY_SECRET_KEY
+
+const pizzly = new Pizzly({host: HOST, publishableKey: SECRET})
 const githubApi = pizzly.integration('github')
 
 const parseLog = function(array) {
