@@ -10,25 +10,25 @@
         <div class="tabs is-centered">
           <ul>
             <li><a @click="() => switchTabs('barChart')" v-bind:class="{'is-active': activeTabs['barChart']}">
-              Bar chart
+              Bar
             </a></li>
             <li><a @click="() => switchTabs('pieChart')" v-bind:class="{'is-active': activeTabs['pieChart']}">
-              Pie chart
+              Pie
             </a></li>
             <li><a @click="() => switchTabs('scatterChart')" v-bind:class="{'is-active': activeTabs['scatterChart']}">
-              Scatter chart
+              Line
             </a></li>
           </ul>
         </div>
         <div>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['barChart']}">
-              <Plotly v-if="selected" :data="data1" :layout="layout" :display-mode-bar="false"></Plotly>
+              <Plotly v-if="selected" :data="barData" :layout="layout" :display-mode-bar="false"></Plotly>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['pieChart']}">
-            <Plotly v-if="selected" :data="data2" :layout="layout" :display-mode-bar="false"></Plotly>
+            <Plotly v-if="selected" :data="pieData" :layout="layout" :display-mode-bar="false"></Plotly>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['scatterChart']}">
-            <Plotly v-if="selected" :data="data3" :layout="layout" :display-mode-bar="false"></Plotly>
+            <Plotly v-if="selected" :data="lineData" :layout="layout" :display-mode-bar="false"></Plotly>
           </section>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default {
     gitlogInstance: function() {
       return GitLog.fromArray(this.gitlog._log)
     },
-    data1: function() {
+    barData: function() {
       const data = this.getData()
 
       const r = {
@@ -104,7 +104,7 @@ export default {
         return [r]
       }
     },
-    data2: function() {
+    pieData: function() {
       const data = this.getData()
       return [{
         labels: data.x,
@@ -112,14 +112,13 @@ export default {
         type: "pie"
       }]
     },
-    data3: function() {
+    lineData: function() {
       const data = this.getData()
 
       const r = {
         x: data.x,
         y: data.y,
         type: "scatter",
-        mode: "markers"
       }
 
       if (data.z !== null) {
