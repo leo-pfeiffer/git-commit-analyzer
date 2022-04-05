@@ -1,6 +1,7 @@
 # Git Commit Analyzer
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/bb8725e1-c3c8-49d1-8c47-2b4c0f2c10e0/deploy-status)](https://app.netlify.com/sites/git-commit-analyzer/deploys)
+[![CI workflow](https://github.com/leo-pfeiffer/git-commit-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/leo-pfeiffer/git-commit-analyzer/actions/workflows/ci.yml)
 
 Git Commit Analyzer is a visual analytics tool for your Git commit history.
 
