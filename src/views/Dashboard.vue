@@ -91,8 +91,6 @@ export default {
     data1: function() {
       const data = this.getData()
 
-      console.log(data)
-
       const r = {
         x: data.x,
         y: data.y,
@@ -136,6 +134,7 @@ export default {
     },
   },
   mounted() {
+    this.$store.commit("setGitlog", GitLog.fromPlainObject(this.gitlog));
     if (this.gitlog === null || this.gitlog === undefined || this.gitlog === {}) {
       this.backToHome("Gitlog not found!")
     }
@@ -178,11 +177,11 @@ export default {
     getData: function() {
       const logHandler = new LogHandler(this.gitlogInstance)
 
-      const keyKf = LogHandler.keyMap[this.selectedOpts.key.name]
+      const keyKf = LogHandler.keyMap[this.selectedKeyFunc]
       const keyFunc = keyKf.func
       const keyTransformer = keyKf.transform
 
-      const valFunc = LogHandler.valMap[this.selectedOpts.value.name]
+      const valFunc = LogHandler.valMap[this.selectedValueFunc]
 
       if (this.selectedOpts.color === null) {
         const data = logHandler.aggregateBy(keyFunc, valFunc)
@@ -192,8 +191,7 @@ export default {
           z: null
         }
       } else {
-
-        const groupKf = LogHandler.keyMap[this.selectedOpts.color.name]
+        const groupKf = LogHandler.keyMap[this.selectedGroupFunc]
 
         const groupFunc = groupKf.func
         const groupTransformer = groupKf.transform

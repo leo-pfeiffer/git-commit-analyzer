@@ -74,7 +74,6 @@ export default {
         this.loadingVerify = true;
         try {
           const gitlog = TxtParser.parse(this.inputText);
-          console.log(gitlog)
           this.setInputValidTrue()
           this.$store.commit("setGitlog", gitlog);
           this.$store.commit("setLogTypeText");

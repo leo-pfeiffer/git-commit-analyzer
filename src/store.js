@@ -1,5 +1,5 @@
 import Vue from "vue";
-
+import createPersistedState from "vuex-persistedstate";
 import Vuex from "vuex";
 
 Vue.use(Vuex);
@@ -26,5 +26,6 @@ export default new Vuex.Store({
         setLogTypeNull (state) {
             state.logType = ""
         }
-    }
+    },
+    plugins: [createPersistedState()],
 });
