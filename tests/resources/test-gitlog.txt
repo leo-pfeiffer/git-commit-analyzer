@@ -107,8 +107,3 @@ Date:   2022-03-06T18:29:45+00:00
     feat: this is a new feature
 
 1	0	hello.txt
-© 2022 GitHub, Inc.
-Terms
-Privacy
-Security
-Status

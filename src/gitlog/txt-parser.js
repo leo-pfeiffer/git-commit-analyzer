@@ -34,19 +34,19 @@ export default class TxtParser {
     }
 
     static matchAuthorName(string) {
-        const match = TxtParser.matchPattern(string, /(?<=Author:\s)[\S].*(?=\s<)/g)
+        const match = TxtParser.matchGroup(string, /(Author:\s)(.*)(\s<[\S].*)/g, 2)
         if (match == null) TxtParser.parseError("author name")
         return match
     }
 
     static matchAuthorMail(string) {
-        const match = TxtParser.matchPattern(string, /(?<=Author:\s.*<)[\S].*(?=>)/g)
+        const match = TxtParser.matchGroup(string, /(Author:\s)(.*)(\s<)([\S].*)(>)/g, 4)
         if (match == null) TxtParser.parseError("author mail")
         return match
     }
 
     static matchTimestamp(string) {
-        const match = TxtParser.matchPattern(string, /(?<=Date:\s+)[\d{4}][\S].*/g)
+        const match = TxtParser.matchGroup(string, /(Date:\s+)([\d{4}][\S].*)/g, 2)
         if (match == null) TxtParser.parseError("timestamp")
         return match
     }
@@ -58,7 +58,7 @@ export default class TxtParser {
     }
 
     static matchHeader(string) {
-        const match = TxtParser.matchPattern(string, /(?<=\n\s{4})[\S].*/g)
+        const match = TxtParser.matchGroup(string, /(\n\s{4})([\S].*)/g, 2)
         if (match == null) TxtParser.parseError("header")
         return match
     }
@@ -66,11 +66,11 @@ export default class TxtParser {
     static matchBody(string) {
         const match = [];
         let array;
-        const pattern = /(?<=\n\s{4})([\S].*)/g;
+        const pattern = /(\n\s{4})([\S].*)/g;
 
         let take = false
         while ((array = pattern.exec(string)) !== null) {
-            if (take) match.push(array[0])
+            if (take) match.push(array[2])
             take = true;
         }
 
