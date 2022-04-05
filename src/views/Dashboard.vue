@@ -91,6 +91,8 @@ export default {
     data1: function() {
       const data = this.getData()
 
+      console.log(data)
+
       const r = {
         x: data.x,
         y: data.y,
@@ -175,27 +177,34 @@ export default {
     },
     getData: function() {
       const logHandler = new LogHandler(this.gitlogInstance)
-      const keyFunc = LogHandler.keyMap[this.selectedOpts.key.name]
+
+      const keyKf = LogHandler.keyMap[this.selectedOpts.key.name]
+      const keyFunc = keyKf.func
+      const keyTransformer = keyKf.transform
+
       const valFunc = LogHandler.valMap[this.selectedOpts.value.name]
 
       if (this.selectedOpts.color === null) {
         const data = logHandler.aggregateBy(keyFunc, valFunc)
         return {
-          x: Object.keys(data),
+          x: Object.keys(data).map(e => keyTransformer(e)),
           y: Object.keys(data).map(e => data[e]).map(e => e.value),
           z: null
         }
       } else {
-        const groupFunc = LogHandler.keyMap[this.selectedOpts.color.name]
+
+        const groupKf = LogHandler.keyMap[this.selectedOpts.color.name]
+
+        const groupFunc = groupKf.func
+        const groupTransformer = groupKf.transform
+
         const data = logHandler.groupAggregateBy(groupFunc, keyFunc, valFunc)
-        console.log(data)
         return  {
-          x: Object.keys(data).map(e => data[e]).map(e => e.key),
+          x: Object.keys(data).map(e => data[e]).map(e => e.key).map(e => keyTransformer(e)),
           y: Object.keys(data).map(e => data[e]).map(e => e.value),
-          z: Object.keys(data).map(e => data[e]).map(e => e.group),
+          z: Object.keys(data).map(e => data[e]).map(e => e.group).map(e => groupTransformer(e)),
         }
       }
-
     }
   }
 };

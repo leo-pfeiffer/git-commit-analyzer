@@ -3,57 +3,27 @@
 // const {data} = require("./test-log.js")
 
 export default class LogHandler {
-    constructor(gitlog) {
-        this.data = [...gitlog.log]
-    }
-
-    /**
-     * Aggregator for top level keys of the Gitlog object.
-     * @param keyFunc: function to get the key per commit
-     * @param valueFunc: function to aggregate by
-     * */
-    aggregateBy (keyFunc, valueFunc) {
-        const grouped = this.data.reduce((agg, next) => {
-            const curKeyValue = keyFunc(next)
-            curKeyValue in agg ? agg[curKeyValue].push(next) : agg[curKeyValue] = [next]
-            return agg
-        }, {})
-        Object.keys(grouped).forEach((k) => {
-            grouped[k] = {
-                value: valueFunc(grouped[k]),
-            }
-        })
-        return grouped
-    }
-
-    groupAggregateBy(groupFunc, keyFunc, valueFunc) {
-        const grouped = this.data.reduce((agg, next) => {
-            const curKey = [keyFunc(next), groupFunc(next)]
-
-            curKey in agg ? agg[curKey].push(next) : agg[curKey] = [next]
-            return agg
-        }, {})
-        Object.keys(grouped).forEach((k) => {
-            grouped[k] = {
-                key: keyFunc(grouped[k][0]),
-                group: groupFunc(grouped[k][0]),
-                value: valueFunc(grouped[k])
-            }
-        })
-        return grouped
-    }
-
     // KEY FUNCTIONS ==============
     static keyMap = {
-        Commit: LogHandler.kfHash,
-        AuthorName: LogHandler.kfAuthorName,
-        AuthorMail: LogHandler.kfAuthorMail,
-        Date: LogHandler.kfDate,
-        WeekDay: LogHandler.kfWeekDay,
-        DayOfMonth: LogHandler.kfDayOfMonth,
-        Year: LogHandler.kfYear,
-        Month: LogHandler.kfMonth,
-        Hour: LogHandler.kfHourOfDay,
+        Commit: {func: LogHandler.kfHash, transform: (_) => _},
+        AuthorName: {func: LogHandler.kfAuthorName, transform: (_) => _},
+        AuthorMail: {func: LogHandler.kfAuthorMail, transform: (_) => _},
+        Date: {func: LogHandler.kfDate, transform: (date) => new Date(date)},
+        WeekDay: {func: LogHandler.kfWeekDay, transform: (_) => _},
+        DayOfMonth: {func: LogHandler.kfDayOfMonth, transform: (_) => _},
+        Year: {func: LogHandler.kfYear, transform: (_) => _},
+        Month: {func: LogHandler.kfMonth, transform: (_) => _},
+        Hour: {func: LogHandler.kfHourOfDay, transform: (_) => _},
+    }
+    // VALUE FUNCTIONS ==============
+    static valMap = {
+        NumCommits: LogHandler.vfNumCommits,
+        Additions: LogHandler.vfNumAdditions,
+        Deletions: LogHandler.vfNumDeletions,
+    }
+
+    constructor(gitlog) {
+        this.data = [...gitlog.log]
     }
 
     static kfHash(obj) {
@@ -95,13 +65,6 @@ export default class LogHandler {
         return obj.timestamp.getHours()
     }
 
-    // VALUE FUNCTIONS ==============
-    static valMap = {
-        NumCommits: LogHandler.vfNumCommits,
-        Additions: LogHandler.vfNumAdditions,
-        Deletions: LogHandler.vfNumDeletions,
-    }
-
     static vfNumCommits(array) {
         return array.length
     }
@@ -118,6 +81,42 @@ export default class LogHandler {
         return array.reduce((agg, next) => {
             return next.nodes.reduce((agg, next) => next[key] + agg, 0) + agg
         }, 0)
+    }
+
+    /**
+     * Aggregator for top level keys of the Gitlog object.
+     * @param keyFunc: function to get the key per commit
+     * @param valueFunc: function to aggregate by
+     * */
+    aggregateBy(keyFunc, valueFunc) {
+        const grouped = this.data.reduce((agg, next) => {
+            const curKeyValue = keyFunc(next)
+            curKeyValue in agg ? agg[curKeyValue].push(next) : agg[curKeyValue] = [next]
+            return agg
+        }, {})
+        Object.keys(grouped).forEach((k) => {
+            grouped[k] = {
+                value: valueFunc(grouped[k]),
+            }
+        })
+        return grouped
+    }
+
+    groupAggregateBy(groupFunc, keyFunc, valueFunc) {
+        const grouped = this.data.reduce((agg, next) => {
+            const curKey = [keyFunc(next), groupFunc(next)]
+
+            curKey in agg ? agg[curKey].push(next) : agg[curKey] = [next]
+            return agg
+        }, {})
+        Object.keys(grouped).forEach((k) => {
+            grouped[k] = {
+                key: keyFunc(grouped[k][0]),
+                group: groupFunc(grouped[k][0]),
+                value: valueFunc(grouped[k])
+            }
+        })
+        return grouped
     }
 }
 
