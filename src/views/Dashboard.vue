@@ -22,13 +22,19 @@
         </div>
         <div>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['barChart']}">
-              <Plotly v-if="selected" :data="barData" :layout="layout" :display-mode-bar="false"></Plotly>
+              <Plotly v-if="selected" :data="barData" :layout="layout" :display-mode-bar="false"
+                      :show-link="showLink" :plotly-server-url="plotlyServerURL" :link-text="linkText"
+                      :responsive="true"/>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['pieChart']}">
-            <Plotly v-if="selected" :data="pieData" :layout="layout" :display-mode-bar="false"></Plotly>
+            <Plotly v-if="selected" :data="pieData" :layout="layout" :display-mode-bar="false"
+                    :show-link="showLink" :plotly-server-url="plotlyServerURL" :link-text="linkText"
+                    :responsive="true"/>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['scatterChart']}">
-            <Plotly v-if="selected" :data="lineData" :layout="layout" :display-mode-bar="false"></Plotly>
+            <Plotly v-if="selected" :data="lineData" :layout="layout" :display-mode-bar="false"
+                    :show-link="showLink" :plotly-server-url="plotlyServerURL" :link-text="linkText"
+                    :responsive="true"/>
           </section>
         </div>
       </div>
@@ -57,7 +63,10 @@ export default {
         scatterChart: false,
       },
       selectedOpts: {},
-      selected: false
+      selected: false,
+      linkText: "Edit in Chart Studio",
+      showLink: true,
+      plotlyServerURL: "https://chart-studio.plotly.com",
     }
   },
   computed: {
@@ -144,6 +153,7 @@ export default {
       const y = this.selectedValueFunc
       return {
         title: `${y} per ${x}`,
+        height: 500,
         margin: {b: 50, l: 50, r: 50, t: 50},
         xaxis: {title: {text: x}},
         yaxis: {title: {text: y}},
