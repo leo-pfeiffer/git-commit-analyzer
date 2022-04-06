@@ -8,13 +8,13 @@
       <hr>
       <p class="menu-label">Key</p>
       <draggable v-model="key" group="key-options" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.key, this.keyOptions)">
-        <span class="tag is-draggable" v-for="element in key" :key="element.id">{{element.name}}</span>
+        <span class="tag is-draggable highlight" v-for="element in key" :key="element.id">{{element.name}}</span>
       </draggable>
 <!--      TODO -->
       <hr>
       <p class="menu-label">[Color]</p>
       <draggable v-model="color" group="key-options" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.color, this.keyOptions)">
-        <span class="tag is-draggable" v-for="element in color" :key="element.id">{{element.name}}</span>
+        <span class="tag is-draggable highlight" v-for="element in color" :key="element.id">{{element.name}}</span>
       </draggable>
     </div>
 
@@ -25,7 +25,7 @@
       <hr>
       <p class="menu-label">Value</p>
       <draggable v-model="value" group="value-opts" @start="drag=true" @end="drag=false" @change="(e) => groupChange(e, this.value, this.valueOptions)">
-        <span class="tag is-draggable" v-for="element in value" :key="element.id">{{element.name}}</span>
+        <span class="tag is-draggable highlight" v-for="element in value" :key="element.id">{{element.name}}</span>
       </draggable>
     </div>
 
@@ -123,5 +123,8 @@ hr {
   margin-bottom: 10px;
 }
 
+.highlight {
+  background-color: #e0c2ff;
+}
 
 </style>
