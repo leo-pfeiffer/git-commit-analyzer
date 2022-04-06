@@ -108,6 +108,7 @@ export default {
 
 tag, .is-draggable {
   cursor: grab;
+  margin: 1px;
 }
 
 tag, .is-draggable:active {
