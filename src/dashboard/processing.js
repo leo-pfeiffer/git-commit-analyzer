@@ -1,11 +1,7 @@
-// import {data} from "@/dashboard/test-log"
-// import {parseLog} from "@/api/github";
-// const {data} = require("./test-log.js")
-
 export default class LogHandler {
     // KEY FUNCTIONS ==============
     static keyMap = {
-        Commit: {func: LogHandler.kfHash, transform: (_) => _},
+        Commit: {func: LogHandler.kfHash, transform: (hash) => hash.substr(0, 4)},
         AuthorName: {func: LogHandler.kfAuthorName, transform: (_) => _},
         AuthorMail: {func: LogHandler.kfAuthorMail, transform: (_) => _},
         Date: {func: LogHandler.kfDate, transform: (date) => new Date(date)},
@@ -84,16 +80,24 @@ export default class LogHandler {
     }
 
     /**
+     * Group by a key function.
+     * @param keyFunc: function to get the key per commit
+     * */
+    groupBy(keyFunc) {
+        return this.data.reduce((agg, next) => {
+            const curKeyValue = keyFunc(next)
+            curKeyValue in agg ? agg[curKeyValue].push(next) : agg[curKeyValue] = [next]
+            return agg
+        }, {})
+    }
+
+    /**
      * Aggregator for top level keys of the Gitlog object.
      * @param keyFunc: function to get the key per commit
      * @param valueFunc: function to aggregate by
      * */
     aggregateBy(keyFunc, valueFunc) {
-        const grouped = this.data.reduce((agg, next) => {
-            const curKeyValue = keyFunc(next)
-            curKeyValue in agg ? agg[curKeyValue].push(next) : agg[curKeyValue] = [next]
-            return agg
-        }, {})
+        const grouped = this.groupBy(keyFunc)
         Object.keys(grouped).forEach((k) => {
             grouped[k] = {
                 value: valueFunc(grouped[k]),
@@ -105,7 +109,6 @@ export default class LogHandler {
     groupAggregateBy(groupFunc, keyFunc, valueFunc) {
         const grouped = this.data.reduce((agg, next) => {
             const curKey = [keyFunc(next), groupFunc(next)]
-
             curKey in agg ? agg[curKey].push(next) : agg[curKey] = [next]
             return agg
         }, {})

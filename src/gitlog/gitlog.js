@@ -14,7 +14,6 @@ export default class GitLog {
     }
 
     static fromPlainObject(object) {
-        console.log(object)
         const log = []
         for (let commit of object._log) {
             log.push(new Commit(

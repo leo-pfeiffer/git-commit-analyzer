@@ -61,8 +61,9 @@ export default {
     groupChange: function(event, array, optionsArray) {
       if ("added" in event) {
         this.removeOld(event.added.newIndex, array, optionsArray)
-        this.submit()
+        // this.submit()
       }
+      this.submit()
       // todo handle removed
     },
     removeOld: function (newIndex, array, optionsArray) {
@@ -74,14 +75,14 @@ export default {
       }
     },
     submit: function() {
-      if (this.key.length === 1 && this.value.length === 1) {
+      // if (this.key.length === 1 && this.value.length === 1) {
         const selection = {
           key: this.key[0],
           value: this.value[0],
           color: (this.color.length !== 1) ? null : this.color[0]
         }
         this.$emit("optionChange", selection)
-      }
+      // }
     }
   }
 }
