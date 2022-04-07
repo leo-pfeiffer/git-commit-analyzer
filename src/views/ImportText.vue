@@ -4,13 +4,15 @@
       <div class="container center-screen import-container">
         <div class="card import-card">
           <div class="card-header">
-            <div class="card-header-title">Import with Text</div>
+            <div class="card-header-title">Import<span class="is-family-code">&nbsp;git log</span></div>
           </div>
           <div class="card-content">
             <div class="is-center">
-              <span>Run </span><br>
+              <span>Open a terminal window in the local copy of your repository<br>
+                and run the following command:</span><br><br>
               <CopySpan :text="'git log --numstat --date=iso-strict > gitlog.txt'" :class="['is-family-code']"/><br>
-              <span> and paste the content of the file.</span>
+              <br>
+                Paste the content of the <span class="is-family-code">gitlog.txt</span> file below.
             </div>
             <hr>
             <textarea class="textarea is-family-code" placeholder="commit 2aae6c35 ..."

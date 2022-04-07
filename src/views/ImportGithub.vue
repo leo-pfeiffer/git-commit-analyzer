@@ -4,7 +4,7 @@
       <div class="container center-screen import-container">
         <div class="card import-card">
           <div class="card-header">
-            <div class="card-header-title">Import with Github</div>
+            <div class="card-header-title">Import from Github</div>
           </div>
           <div class="card-content">
             <div class="is-centered">

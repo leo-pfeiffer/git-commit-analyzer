@@ -1,5 +1,9 @@
 <template>
   <div class="home">
+    <div class="m-0">
+      <h1 class="title">Git Commit Analyzer</h1>
+      <h2 class="subtitle">Analyze your project's commit history</h2>
+    </div>
     <section>
       <div class="container center-screen">
         <div class="card">
@@ -61,6 +65,7 @@ export default {
         {name: "Graphs", text: true, github: true},
         {name: "Changes per commit", text: true, github: false},
         {name: "Github integration", text: false, github: true},
+        {name: "Local repositories", text: true, github: false},
       ]
     }
   },
