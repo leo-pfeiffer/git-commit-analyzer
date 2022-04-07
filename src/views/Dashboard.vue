@@ -9,6 +9,9 @@
       <div id="tabs-with-content" class="container">
         <div class="tabs is-centered">
           <ul>
+            <li><a @click="() => switchTabs('sunburstChart')" v-bind:class="{'is-active': activeTabs['sunburstChart']}">
+              Sunburst
+            </a></li>
             <li><a @click="() => switchTabs('barChart')" v-bind:class="{'is-active': activeTabs['barChart']}">
               Bar
             </a></li>
@@ -21,20 +24,33 @@
           </ul>
         </div>
         <div>
+          <section class="tab-content" v-bind:class="{'is-active': activeTabs['sunburstChart']}">
+            <Plotly v-if="selected && activeTabs['sunburstChart']"
+                    :data="sunburstData" :layout="layout" :display-mode-bar="false"
+                    :show-link="showLink" :plotly-server-url="plotlyServerURL" :link-text="linkText"
+                    :responsive="true"/>
+            <p v-else>{{ helpTextSunburst }}</p>
+          </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['barChart']}">
-              <Plotly v-if="selected" :data="barData" :layout="layout" :display-mode-bar="false"
+              <Plotly v-if="selected && activeTabs['barChart']"
+                      :data="barData" :layout="layout" :display-mode-bar="false"
                       :show-link="showLink" :plotly-server-url="plotlyServerURL" :link-text="linkText"
                       :responsive="true"/>
+              <p v-else>{{ helpText }}</p>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['pieChart']}">
-            <Plotly v-if="selected" :data="pieData" :layout="layout" :display-mode-bar="false"
+            <Plotly v-if="selected && activeTabs['pieChart']"
+                    :data="pieData" :layout="layout" :display-mode-bar="false"
                     :show-link="showLink" :plotly-server-url="plotlyServerURL" :link-text="linkText"
                     :responsive="true"/>
+            <p v-else>{{ helpText }}</p>
           </section>
           <section class="tab-content" v-bind:class="{'is-active': activeTabs['scatterChart']}">
-            <Plotly v-if="selected" :data="lineData" :layout="layout" :display-mode-bar="false"
+            <Plotly v-if="selected && activeTabs['scatterChart']"
+                    :data="lineData" :layout="layout" :display-mode-bar="false"
                     :show-link="showLink" :plotly-server-url="plotlyServerURL" :link-text="linkText"
                     :responsive="true"/>
+            <p v-else>{{ helpText }}</p>
           </section>
         </div>
       </div>
@@ -48,6 +64,7 @@ import { mapState } from "vuex";
 import LogHandler from "@/dashboard/processing";
 import GitLog from "@/gitlog/gitlog";
 import GraphController from "@/components/GraphController";
+import { nullOrUndefined } from "@/utils/utils";
 
 export default {
   name: 'Dashboard',
@@ -57,8 +74,11 @@ export default {
   },
   data() {
     return {
+      helpText: "To show the chart, select key and value by dragging the tags in the control bar.",
+      helpTextSunburst: "To show the chart, select a key by dragging the tags in the control bar.",
       activeTabs: {
-        barChart: true,
+        sunburstChart: true,
+        barChart: false,
         pieChart: false,
         scatterChart: false,
       },
@@ -137,6 +157,58 @@ export default {
         return [r]
       }
     },
+    sunburstData: function() {
+
+      const logHandler = new LogHandler(this.gitlogInstance)
+
+      const keyKf = LogHandler.keyMap[this.selectedKeyFunc]
+      const keyFunc = keyKf.func
+      const keyTransformer = keyKf.transform
+
+      const isCommitKf = keyKf === LogHandler.keyMap.Commit;
+
+      const grouped = logHandler.groupBy(keyFunc)
+
+      const hashTransformer = LogHandler.keyMap.Commit.transform
+
+      const ids = []
+      const labels = []
+      const parents = []
+
+      Object.keys(grouped).forEach((k) => {
+        if (!isCommitKf) {
+          ids.push(k)
+          labels.push(keyTransformer(k));
+          parents.push("");
+        }
+        grouped[k].forEach((c) => {
+          ids.push(c.hash)
+          labels.push(hashTransformer(c.hash));
+          if (isCommitKf) {
+            parents.push("");
+          } else {
+            parents.push(k);
+          }
+          c.nodes.forEach((n) => {
+            ids.push(n.path);
+            labels.push(n.path);
+            parents.push(c.hash);
+          })
+        })
+      })
+
+      return [{
+        type: "sunburst",
+        maxdepth: 2,
+        ids: ids,
+        labels: labels,
+        parents: parents,
+        outsidetextfont: {size: 20},
+        marker: {line: {width: 2}},
+      }];
+
+
+    },
     layout: function() {
       return this.makeLayout()
     },
@@ -149,6 +221,19 @@ export default {
   },
   methods: {
     makeLayout: function() {
+      if (this.activeTabs.sunburstChart) {
+        return this._sunburstLayout();
+      } else {
+        return this._regularLayout();
+      }
+    },
+    _sunburstLayout: function() {
+      return {
+        height: 500,
+        margin: {b: 50, l: 50, r: 50, t: 50},
+      }
+    },
+    _regularLayout: function() {
       const x = this.selectedKeyFunc
       const y = this.selectedValueFunc
       return {
@@ -169,7 +254,9 @@ export default {
     },
     switchTabs: function(tab) {
       this.deactivateAllTabs();
+      this.selected = false;
       this.activateTabsContent(tab);
+      this.updateSelected();
     },
     backToHome(msg) {
       this.$store.commit("setAuthId", "");
@@ -179,9 +266,17 @@ export default {
       console.log(msg)
       // todo emit msg
     },
+    updateSelected() {
+      this.selected =
+          (this.activeTabs.sunburstChart &&
+              !nullOrUndefined(this.selectedOpts.key)) ||
+          (!this.activeTabs.sunburstChart &&
+              !nullOrUndefined(this.selectedOpts.key) &&
+              !nullOrUndefined(this.selectedOpts.value));
+    },
     updateOptions(options) {
       this.selectedOpts = options
-      this.selected = true;
+      this.updateSelected()
     },
     getData: function() {
       const logHandler = new LogHandler(this.gitlogInstance)
