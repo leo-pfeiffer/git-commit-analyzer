@@ -175,13 +175,17 @@ export default {
       const labels = []
       const parents = []
 
+      // todo this is a performance bottleneck
+
       Object.keys(grouped).forEach((k) => {
+        // transform keys
         if (!isCommitKf) {
           ids.push(k)
           labels.push(keyTransformer(k));
           parents.push("");
         }
         grouped[k].forEach((c) => {
+          // transform commits
           ids.push(c.hash)
           labels.push(hashTransformer(c.hash));
           if (isCommitKf) {
@@ -190,6 +194,7 @@ export default {
             parents.push(k);
           }
           c.nodes.forEach((n) => {
+            // transform nodes
             ids.push(n.path);
             labels.push(n.path);
             parents.push(c.hash);
@@ -203,6 +208,8 @@ export default {
         ids: ids,
         labels: labels,
         parents: parents,
+        textposition: 'inside',
+        insidetextorientation: 'radial',
         outsidetextfont: {size: 20},
         marker: {line: {width: 2}},
       }];
