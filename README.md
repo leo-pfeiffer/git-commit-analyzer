@@ -10,7 +10,7 @@ Git Commit Analyzer is a visual analytics tool for your Git commit history.
 - Works with local git repositories
 - Integrates with GitHub
 
-Try it out [here.](https://git-commit-analyzer.netlify.app/)
+Try it out [here](https://git-commit-analyzer.netlify.app/) or read my [dev.to article](https://dev.to/leopfeiffer/insights-into-your-git-commits-git-commit-analyzer-o1o) walking through the project.
 
 ## Project setup
 
